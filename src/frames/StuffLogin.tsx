@@ -126,6 +126,9 @@ const StuffLogin = () => {
           <Button colorScheme="teal" size="lg" width="100%">
             Login
           </Button>
+          <Button marginY="25px" colorScheme="black" size="md" width="100%">
+            Forgot Password ?
+          </Button>
         </Box>
       </Box>
     </Flex>
