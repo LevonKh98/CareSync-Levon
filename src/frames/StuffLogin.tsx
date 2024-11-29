@@ -20,7 +20,34 @@ const StuffLogin = () => {
       width="100vw"
       bg="blue.50"
       direction={{ base: "column", md: "row" }}
+      position="relative"
     >
+      {/* Admin and Help Buttons in Bottom-Right */}
+      <Box
+        position="absolute"
+        bottom={4}
+        right={4}
+        display="flex"
+        flexDirection="column"
+        gap={2}
+      >
+        {/* Admin Button */}
+        <Button colorScheme="teal" size="sm">
+          Admin
+        </Button>
+
+        {/* Help Button */}
+        <Button
+          colorScheme="teal"
+          size="sm"
+          variant="outline" // Makes it distinct but consistent
+          borderColor="teal.500"
+          _hover={{ bg: "teal.50" }} // Light teal background on hover
+        >
+          Help
+        </Button>
+      </Box>
+
       {/* Left Section (Image) */}
       <Box
         flex="1"
