@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { FaUser, FaLock } from "react-icons/fa";
 
-const StuffLogin = () => {
+const StaffLogin = () => {
   return (
     <Flex
       height="100vh"
@@ -135,4 +135,4 @@ const StuffLogin = () => {
   );
 };
 
-export default StuffLogin;
+export default StaffLogin;

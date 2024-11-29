@@ -1,5 +1,5 @@
 import React from "react";
-import StuffLogin from "./frames/StuffLogin";
+import StuffLogin from "./frames/StaffLogin";
 
 function App() {
   return <StuffLogin />;
