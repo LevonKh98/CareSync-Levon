@@ -38,7 +38,7 @@ const StaffLogin = () => {
 
         {/* Help Button */}
         <Button
-          colorScheme="teal"
+          colorScheme="teal" //color teal
           size="sm"
           variant="outline" // Makes it distinct but consistent
           borderColor="teal.500"
