@@ -15,19 +15,37 @@ import { FaUser, FaLock } from "react-icons/fa";
 
 const StuffLogin = () => {
   return (
-    <Flex height="100vh" width="100vw" bg="blue.50">
-      {/* Left Section */}
-      <Box flex="1" display="flex" alignItems="center" justifyContent="center">
+    <Flex
+      height="100vh"
+      width="100vw"
+      bg="blue.50"
+      direction={{ base: "column", md: "row" }}
+    >
+      {/* Left Section (Image) */}
+      <Box
+        flex="1"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        height={{ base: "40%", md: "100%" }}
+      >
         <Image
           src="/main_pic.png"
           alt="Staff Illustration"
-          maxHeight="80%"
+          maxHeight={{ base: "60%", md: "80%" }}
           objectFit="contain"
         />
       </Box>
 
-      {/* Right Section */}
-      <Box flex="1" display="flex" alignItems="center" justifyContent="center">
+      {/* Right Section (Login Card) */}
+      <Box
+        flex="1"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        height={{ base: "60%", md: "100%" }}
+        p={{ base: 4, md: 8 }}
+      >
         <Box
           bg="white"
           p={{ base: 4, md: 8 }}
@@ -40,8 +58,6 @@ const StuffLogin = () => {
           <Heading as="h2" size="lg" mb={4} textAlign="center" color="gray.700">
             Staff Login
           </Heading>
-
-          {/* Description */}
           <Text textAlign="center" mb={6} color="gray.600">
             Please enter your username and password to continue
           </Text>
