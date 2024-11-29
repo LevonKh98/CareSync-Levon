@@ -1,0 +1,92 @@
+import React from "react";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Text,
+  Icon,
+  Image,
+} from "@chakra-ui/react";
+import { FaUser, FaLock } from "react-icons/fa";
+
+const StuffLogin = () => {
+  return (
+    <Flex height="100vh" width="100vw" bg="blue.50">
+      {/* Left Section */}
+      <Box flex="1" display="flex" alignItems="center" justifyContent="center">
+        <Image
+          src="/main_pic.png"
+          alt="Staff Illustration"
+          maxHeight="80%"
+          objectFit="contain"
+        />
+      </Box>
+
+      {/* Right Section */}
+      <Box flex="1" display="flex" alignItems="center" justifyContent="center">
+        <Box
+          bg="white"
+          p={{ base: 4, md: 8 }}
+          borderRadius="md"
+          shadow="md"
+          maxWidth="400px"
+          width="100%"
+        >
+          {/* Title */}
+          <Heading as="h2" size="lg" mb={4} textAlign="center" color="gray.700">
+            Staff Login
+          </Heading>
+
+          {/* Description */}
+          <Text textAlign="center" mb={6} color="gray.600">
+            Please enter your username and password to continue
+          </Text>
+
+          {/* Username Input */}
+          <InputGroup mb={4}>
+            <InputLeftElement
+              children={<Icon as={FaUser} color="gray.400" />}
+            />
+            <Input
+              placeholder="Username"
+              variant="filled"
+              bg="gray.50"
+              _hover={{ bg: "gray.100" }}
+              _focus={{ bg: "white", borderColor: "teal.500" }}
+              color="gray.800"
+              _placeholder={{ color: "gray.500" }}
+            />
+          </InputGroup>
+
+          {/* Password Input */}
+          <InputGroup mb={6}>
+            <InputLeftElement
+              children={<Icon as={FaLock} color="gray.400" />}
+            />
+            <Input
+              placeholder="Password"
+              type="password"
+              variant="filled"
+              bg="gray.50"
+              _hover={{ bg: "gray.100" }}
+              _focus={{ bg: "white", borderColor: "teal.500" }}
+              color="gray.800"
+              _placeholder={{ color: "gray.500" }}
+            />
+          </InputGroup>
+
+          {/* Login Button */}
+          <Button colorScheme="teal" size="lg" width="100%">
+            Login
+          </Button>
+        </Box>
+      </Box>
+    </Flex>
+  );
+};
+
+export default StuffLogin;
