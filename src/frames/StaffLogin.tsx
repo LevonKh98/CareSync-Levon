@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -12,8 +12,45 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { FaUser, FaLock } from "react-icons/fa";
+import axios from "axios";
+import { useNavigate } from "react-router-dom"; // Import for navigation
 
 const StaffLogin = () => {
+  const [username, setUsername] = useState(""); // State for username
+  const [password, setPassword] = useState(""); // State for password
+  const [error, setError] = useState(""); // State for error messages
+  const navigate = useNavigate(); // Hook for navigation
+
+  // Function to handle login
+  const handleLogin = async () => {
+    if (!username || !password) {
+      setError("Username and password are required.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/login", {
+        username,
+        password,
+      });
+      console.log("API Response:", response.data);
+
+      if (response.data.success) {
+        // Navigate to StaffPage on successful login
+        navigate("/staff");
+      }
+    } catch (error) {
+      // Handle error response
+      if (axios.isAxiosError(error)) {
+        setError(
+          error.response?.data?.message || "Invalid username or password"
+        );
+      } else {
+        setError("An unexpected error occurred");
+      }
+    }
+  };
+
   return (
     <Flex
       height="100vh"
@@ -31,18 +68,15 @@ const StaffLogin = () => {
         flexDirection="column"
         gap={2}
       >
-        {/* Admin Button */}
         <Button colorScheme="teal" size="sm">
           Admin
         </Button>
-
-        {/* Help Button */}
         <Button
-          colorScheme="teal" //color teal
+          colorScheme="teal"
           size="sm"
-          variant="outline" // Makes it distinct but consistent
+          variant="outline"
           borderColor="teal.500"
-          _hover={{ bg: "teal.50" }} // Light teal background on hover
+          _hover={{ bg: "teal.50" }}
         >
           Help
         </Button>
@@ -102,6 +136,8 @@ const StaffLogin = () => {
               _focus={{ bg: "white", borderColor: "teal.500" }}
               color="gray.800"
               _placeholder={{ color: "gray.500" }}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </InputGroup>
 
@@ -119,13 +155,29 @@ const StaffLogin = () => {
               _focus={{ bg: "white", borderColor: "teal.500" }}
               color="gray.800"
               _placeholder={{ color: "gray.500" }}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </InputGroup>
 
           {/* Login Button */}
-          <Button colorScheme="teal" size="lg" width="100%">
+          <Button
+            colorScheme="teal"
+            size="lg"
+            width="100%"
+            onClick={handleLogin}
+          >
             Login
           </Button>
+
+          {/* Error Message */}
+          {error && (
+            <Text textAlign="center" mt={4} color="red.600">
+              {error}
+            </Text>
+          )}
+
+          {/* Forgot Password Button */}
           <Button marginY="25px" colorScheme="black" size="md" width="100%">
             Forgot Password ?
           </Button>
