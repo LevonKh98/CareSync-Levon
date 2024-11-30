@@ -1,8 +1,8 @@
 import React from "react";
-import StuffLogin from "./frames/StaffLogin";
+import StaffLogin from "./frames/StaffLogin";
 
 function App() {
-  return <StuffLogin />;
+  return <StaffLogin />;
 }
 
 export default App;
