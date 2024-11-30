@@ -51,6 +51,12 @@ const StaffLogin = () => {
     }
   };
 
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter") {
+      handleLogin();
+    }
+  };
+
   return (
     <Flex
       height="100vh"
@@ -58,6 +64,7 @@ const StaffLogin = () => {
       bg="blue.50"
       direction={{ base: "column", md: "row" }}
       position="relative"
+      onKeyDown={handleKeyPress}
     >
       {/* Admin and Help Buttons in Bottom-Right */}
       <Box
