@@ -6,6 +6,7 @@ install Thunder Client extension inside vS Code
 // to run the server
 cd Backend
 node server.js
+you can also run using "npm run dev"
 
 // for password hashing
 npm install bcrypt
