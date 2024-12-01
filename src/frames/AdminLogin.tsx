@@ -15,7 +15,7 @@ import { FaUser, FaLock } from "react-icons/fa";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; // Import for navigation
 
-const StaffLogin = () => {
+const AdminLogin = () => {
   const [username, setUsername] = useState(""); // State for username
   const [password, setPassword] = useState(""); // State for password
   const [error, setError] = useState(""); // State for error messages
@@ -29,15 +29,18 @@ const StaffLogin = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/login", {
-        username,
-        password,
-      });
+      const response = await axios.post(
+        "http://localhost:5000/api/loginAdmin",
+        {
+          username,
+          password,
+        }
+      );
       console.log("API Response:", response.data);
 
       if (response.data.success) {
         // Navigate to StaffPage on successful login
-        navigate("/staff");
+        navigate("/adminPage");
       }
     } catch (error) {
       // Handle error response
@@ -49,10 +52,6 @@ const StaffLogin = () => {
         setError("An unexpected error occurred");
       }
     }
-  };
-
-  const handleAdmin = () => {
-    navigate("/adminLogin");
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -70,7 +69,7 @@ const StaffLogin = () => {
       position="relative"
       onKeyDown={handleKeyPress}
     >
-      {/* Admin and Help Buttons in Bottom-Right */}
+      {/*Help Button in Bottom-Right */}
       <Box
         position="absolute"
         bottom={4}
@@ -79,9 +78,6 @@ const StaffLogin = () => {
         flexDirection="column"
         gap={2}
       >
-        <Button colorScheme="teal" size="sm" onClick={handleAdmin}>
-          Admin
-        </Button>
         <Button
           colorScheme="teal"
           size="sm"
@@ -102,7 +98,7 @@ const StaffLogin = () => {
         height={{ base: "40%", md: "100%" }}
       >
         <Image
-          src="/main_pic.png"
+          src="/adminImage.webp"
           alt="Staff Illustration"
           maxHeight={{ base: "60%", md: "80%" }}
           objectFit="contain"
@@ -128,7 +124,7 @@ const StaffLogin = () => {
         >
           {/* Title */}
           <Heading as="h2" size="lg" mb={4} textAlign="center" color="gray.700">
-            Staff Login
+            Admin Login
           </Heading>
           <Text textAlign="center" mb={6} color="gray.600">
             Please enter your username and password to continue
@@ -187,15 +183,10 @@ const StaffLogin = () => {
               {error}
             </Text>
           )}
-
-          {/* Forgot Password Button */}
-          <Button marginY="25px" colorScheme="black" size="md" width="100%">
-            Forgot Password ?
-          </Button>
         </Box>
       </Box>
     </Flex>
   );
 };
 
-export default StaffLogin;
+export default AdminLogin;
