@@ -9,7 +9,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Route for the Login Page */}
+        {/* Route for the Login Page comment here 2 */} 
         <Route path="/" element={<StaffLogin />} />
 
         {/* Route for the Staff Page */}
