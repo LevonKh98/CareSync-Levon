@@ -17,6 +17,12 @@ const hashExistingPasswords = async () => {
         const { user_id, password } = user;
 
         try {
+          // Check if the password is already hashed
+          if (password.startsWith("$2b$") || password.startsWith("$2a$")) {
+            console.log(`Password for user ID ${user_id} is already hashed. Skipping...`);
+            continue; // Skip rehashing
+          }
+
           // Hash the current password
           const hashedPassword = await bcrypt.hash(password, 10);
 
