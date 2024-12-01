@@ -3,6 +3,14 @@ npm install express
 npm install cors
 install Thunder Client extension inside vS Code
 
-to run the server
-cd CareSync-Backend
+// to run the server
+cd Backend
 node server.js
+
+// for password hashing
+npm install bcrypt
+
+// in order to automatically restart server
+npm install -g nodemon
+npm install --save-dev nodemon
+// run server as "nodemon server.js"
