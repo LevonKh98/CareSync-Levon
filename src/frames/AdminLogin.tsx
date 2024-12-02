@@ -72,7 +72,7 @@ const AdminLogin = () => {
       {/*Help Button in Bottom-Right */}
       <Box
         position="absolute"
-        bottom={4}
+        top={10}
         right={4}
         display="flex"
         flexDirection="column"
@@ -80,12 +80,11 @@ const AdminLogin = () => {
       >
         <Button
           colorScheme="teal"
-          size="sm"
-          variant="outline"
+          size="md"
+          variant="solid"
           borderColor="teal.500"
-          _hover={{ bg: "teal.50" }}
         >
-          Help
+          Login as Staff
         </Button>
       </Box>
 
