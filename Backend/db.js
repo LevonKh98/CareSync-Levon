@@ -2,7 +2,7 @@ const mysql = require("mysql2");
 
 const db = mysql.createConnection({
     host: "hospital-db.c7y0a4ywyv12.us-east-2.rds.amazonaws.com",
-    user: "admin",
+    user: "levon_kh",
     password: "levonkaren$$$",
     database: "hospital_db",
 });
