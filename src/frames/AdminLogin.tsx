@@ -21,6 +21,10 @@ const AdminLogin = () => {
   const [error, setError] = useState(""); // State for error messages
   const navigate = useNavigate(); // Hook for navigation
 
+  const handleLoginAsStaff = () => {
+    navigate("/");
+  };
+
   // Function to handle login
   const handleLogin = async () => {
     if (!username || !password) {
@@ -83,6 +87,7 @@ const AdminLogin = () => {
           size="md"
           variant="solid"
           borderColor="teal.500"
+          onClick={handleLoginAsStaff}
         >
           Login as Staff
         </Button>
