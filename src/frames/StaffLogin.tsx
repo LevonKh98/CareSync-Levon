@@ -22,33 +22,35 @@ const StaffLogin = () => {
   const navigate = useNavigate(); // Hook for navigation
 
   // Function to handle login
-  const handleLogin = async () => {
+  const handleLogin = () => {
     if (!username || !password) {
       setError("Username and password are required.");
       return;
     }
 
-    try {
-      const response = await axios.post("http://localhost:5000/api/login", {
+    axios
+      .post("http://localhost:5000/api/login", {
         username,
         password,
-      });
-      console.log("API Response:", response.data);
+      })
+      .then((response) => {
+        console.log("API Response:", response.data);
 
-      if (response.data.success) {
-        // Navigate to StaffPage on successful login
-        navigate("/staff");
-      }
-    } catch (error) {
-      // Handle error response
-      if (axios.isAxiosError(error)) {
-        setError(
-          error.response?.data?.message || "Invalid username or password"
-        );
-      } else {
-        setError("An unexpected error occurred");
-      }
-    }
+        if (response.data.success) {
+          // Navigate to StaffPage on successful login
+          navigate("/staff");
+        }
+      })
+      .catch((error) => {
+        // Handle error response
+        if (axios.isAxiosError(error)) {
+          setError(
+            error.response?.data?.message || "Invalid username or password"
+          );
+        } else {
+          setError("An unexpected error occurred");
+        }
+      });
   };
 
   const handleAdmin = () => {
