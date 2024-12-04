@@ -4,6 +4,7 @@ import StaffLogin from "./frames/StaffLogin";
 import StaffPage from "./frames/StaffPage";
 import AdminLogin from "./frames/AdminLogin";
 import AdminPage from "./frames/AdminPage";
+import Help from "./frames/Help";
 
 function App() {
   return (
@@ -20,6 +21,9 @@ function App() {
 
         {/* Route for the AdminPage Page */}
         <Route path="/adminPage" element={<AdminPage />} />
+
+        <Route path="/" element={<StaffLogin />} />
+        <Route path="/help" element={<Help />} />
       </Routes>
     </Router>
   );
