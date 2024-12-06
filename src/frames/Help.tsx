@@ -1,4 +1,5 @@
 import React from "react";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -29,14 +30,14 @@ const Help: React.FC = () => {
         position="absolute"
         top="20px"
         left="20px"
-        bg="white" // Button background
+        bg="transparent" // Button background
         color="teal.600"
         size="lg" // Button size
         borderRadius="full"
         border="2px solid teal" // Add border for better visibility
         onClick={() => navigate(-1)} // Navigate back to the previous page
         _hover={{ bg: "teal.100" }} // Hover effect
-        padding="16px" // Padding for larger icon
+        padding="32px" // Padding for larger icon
         zIndex="10" // Ensure it appears above all elements
       >
         <Image
@@ -99,6 +100,7 @@ const Help: React.FC = () => {
               <Input
                 placeholder="Enter your first name"
                 focusBorderColor="teal.500"
+                color="gray.800"
                 bg="gray.100"
                 _placeholder={{ color: "gray.500" }}
               />
@@ -109,6 +111,7 @@ const Help: React.FC = () => {
               <Input
                 placeholder="Enter your last name"
                 focusBorderColor="teal.500"
+                color="gray.800"
                 bg="gray.100"
                 _placeholder={{ color: "gray.500" }}
               />
@@ -120,6 +123,7 @@ const Help: React.FC = () => {
                 type="email"
                 placeholder="Enter your email"
                 focusBorderColor="teal.500"
+                color="gray.800"
                 bg="gray.100"
                 _placeholder={{ color: "gray.500" }}
               />
@@ -131,6 +135,7 @@ const Help: React.FC = () => {
                 placeholder="Enter your message"
                 focusBorderColor="teal.500"
                 bg="gray.100"
+                color="gray.800"
                 _placeholder={{ color: "gray.500" }}
                 resize="none"
               />
