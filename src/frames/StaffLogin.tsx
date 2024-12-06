@@ -90,6 +90,7 @@ const StaffLogin = () => {
           variant="outline"
           borderColor="teal.500"
           _hover={{ bg: "teal.50" }}
+          onClick={() => navigate("/help")} // Navigate to the Help page
         >
           Help
         </Button>

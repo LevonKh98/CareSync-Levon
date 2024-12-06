@@ -10,25 +10,52 @@ import {
   Textarea,
   Image,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const Help: React.FC = () => {
+  const navigate = useNavigate(); // Hook for navigation
+
   return (
     <Flex
-      height="100vh" // Ensures the entire screen height is used
-      width="100vw" // Ensures the entire screen width is used
-      bg="teal.600" // Background color
+      height="100vh"
+      width="100vw"
+      bg="teal.600"
       align="center"
       justify="center"
       padding="0"
     >
+      {/* Back Button */}
+      <Button
+        position="absolute"
+        top="20px"
+        left="20px"
+        bg="white" // Button background
+        color="teal.600"
+        size="lg" // Button size
+        borderRadius="full"
+        border="2px solid teal" // Add border for better visibility
+        onClick={() => navigate(-1)} // Navigate back to the previous page
+        _hover={{ bg: "teal.100" }} // Hover effect
+        padding="16px" // Padding for larger icon
+        zIndex="10" // Ensure it appears above all elements
+      >
+        <Image
+          src="/back_icon.png" // Path to the back icon in the public folder
+          alt="Go Back"
+          boxSize="40px" // Icon size
+          objectFit="contain" // Maintain aspect ratio
+          fallbackSrc="https://via.placeholder.com/40" // Placeholder if icon fails to load
+        />
+      </Button>
+
       {/* Main container */}
       <Flex
-        bg="white" // Form background
+        bg="white"
         borderRadius="lg"
         overflow="hidden"
-        width={{ base: "95%", lg: "80%" }} // Responsive width
-        maxWidth="1200px" // Maximum width for larger screens
-        flexDirection={{ base: "column", md: "row" }} // Responsive layout
+        width={{ base: "95%", lg: "80%" }}
+        maxWidth="1200px"
+        flexDirection={{ base: "column", md: "row" }}
         boxShadow="lg"
       >
         {/* Left Side - Image */}
@@ -41,9 +68,9 @@ const Help: React.FC = () => {
           padding="20px"
         >
           <Image
-            src="/helppic.png" // Ensure the image is in the public folder
+            src="/helppic.png" // Ensure this image is in the public folder
             alt="Contact Us"
-            boxSize={{ base: "60%", md: "80%", lg: "70%" }} // Responsive image sizing
+            boxSize={{ base: "60%", md: "80%", lg: "70%" }} // Responsive size
             objectFit="contain"
           />
         </Box>
@@ -55,7 +82,7 @@ const Help: React.FC = () => {
           display="flex"
           flexDirection="column"
           justifyContent="center"
-          bg="white" // Form background
+          bg="white"
         >
           <Text
             fontSize={{ base: "2xl", md: "3xl" }}
