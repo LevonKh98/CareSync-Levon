@@ -30,23 +30,16 @@ const Help: React.FC = () => {
         position="absolute"
         top="20px"
         left="20px"
-        bg="transparent" // Button background
-        color="teal.600"
+        bg="teal.500" // Button background
         size="lg" // Button size
         borderRadius="full"
         border="2px solid teal" // Add border for better visibility
         onClick={() => navigate(-1)} // Navigate back to the previous page
-        _hover={{ bg: "teal.100" }} // Hover effect
-        padding="32px" // Padding for larger icon
+        _hover={{ bg: "teal.300" }} // Hover effect
+        padding="24px" // Padding for larger icon
         zIndex="10" // Ensure it appears above all elements
       >
-        <Image
-          src="/back_icon.png" // Path to the back icon in the public folder
-          alt="Go Back"
-          boxSize="40px" // Icon size
-          objectFit="contain" // Maintain aspect ratio
-          fallbackSrc="https://via.placeholder.com/40" // Placeholder if icon fails to load
-        />
+        <ArrowBackIcon boxSize={7} />
       </Button>
 
       {/* Main container */}
