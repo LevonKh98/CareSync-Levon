@@ -21,37 +21,40 @@ const AdminLogin = () => {
   const [error, setError] = useState(""); // State for error messages
   const navigate = useNavigate(); // Hook for navigation
 
+  const handleLoginAsStaff = () => {
+    navigate("/");
+  };
+
   // Function to handle login
-  const handleLogin = async () => {
+  const handleLogin = () => {
     if (!username || !password) {
       setError("Username and password are required.");
       return;
     }
 
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/loginAdmin",
-        {
-          username,
-          password,
-        }
-      );
-      console.log("API Response:", response.data);
+    axios
+      .post("http://localhost:5000/api/loginAdmin", {
+        username,
+        password,
+      })
+      .then((response) => {
+        console.log("API Response:", response.data);
 
-      if (response.data.success) {
-        // Navigate to StaffPage on successful login
-        navigate("/adminPage");
-      }
-    } catch (error) {
-      // Handle error response
-      if (axios.isAxiosError(error)) {
-        setError(
-          error.response?.data?.message || "Invalid username or password"
-        );
-      } else {
-        setError("An unexpected error occurred");
-      }
-    }
+        if (response.data.success) {
+          // Navigate to StaffPage on successful login
+          navigate("/adminPage");
+        }
+      })
+      .catch((error) => {
+        // Handle error response
+        if (axios.isAxiosError(error)) {
+          setError(
+            error.response?.data?.message || "Invalid username or password"
+          );
+        } else {
+          setError("An unexpected error occurred");
+        }
+      });
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -72,7 +75,7 @@ const AdminLogin = () => {
       {/*Help Button in Bottom-Right */}
       <Box
         position="absolute"
-        bottom={4}
+        top={10}
         right={4}
         display="flex"
         flexDirection="column"
@@ -80,12 +83,12 @@ const AdminLogin = () => {
       >
         <Button
           colorScheme="teal"
-          size="sm"
-          variant="outline"
+          size="md"
+          variant="solid"
           borderColor="teal.500"
-          _hover={{ bg: "teal.50" }}
+          onClick={handleLoginAsStaff}
         >
-          Help
+          Login as Staff
         </Button>
       </Box>
 
