@@ -1,13 +1,13 @@
-import React from 'react';
-import { Box, Heading, Text, Button, Flex, Stack } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { Box, Heading, Text, Button, Flex, Stack } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const StaffPage = () => {
   const navigate = useNavigate();
 
   //handles logout
   const handleLogout = () => {
-    navigate('/'); // Navigates to the staff login page
+    navigate("/"); // Navigates to the staff login page
   };
 
   return (
@@ -27,27 +27,21 @@ const StaffPage = () => {
         width="100%"
         maxWidth="800px"
         mx="auto"
-        position="relative" 
+        position="relative"
       >
         {/* Top-Right Buttons */}
-        <Box
-          position="absolute"
-          top={4}
-          right={4}
-          display="flex"
-          gap={4}
-        >
+        <Box position="absolute" top={4} right={4} display="flex" gap={4}>
           <Button
             colorScheme="teal"
             size="sm"
-            onClick={() => alert('View Notifications')}
+            onClick={() => alert("View Notifications")}
           >
             Notifications
           </Button>
           <Button
             colorScheme="teal"
             size="sm"
-            onClick={() => alert('Open Settings')}
+            onClick={() => alert("Open Settings")}
           >
             Settings
           </Button>
@@ -70,7 +64,6 @@ const StaffPage = () => {
           Welcome, Doctor! Here's an overview of your tasks.
         </Text>
 
-
         <Stack spacing={6}>
           {/* Today's Appointments Widget */}
           <Box
@@ -88,7 +81,7 @@ const StaffPage = () => {
               mt={4}
               colorScheme="teal"
               size="sm"
-              onClick={() => alert('View Appointments')}
+              onClick={() => alert("View Appointments")}
             >
               View Details
             </Button>
@@ -110,7 +103,7 @@ const StaffPage = () => {
               mt={4}
               colorScheme="teal"
               size="sm"
-              onClick={() => alert('Look Up Patient')}
+              onClick={() => alert("Look Up Patient")}
             >
               Look Up Patient
             </Button>
@@ -132,7 +125,7 @@ const StaffPage = () => {
               mt={4}
               colorScheme="teal"
               size="sm"
-              onClick={() => alert('Manage Appointments')}
+              onClick={() => alert("Manage Appointments")}
             >
               Manage Appointments
             </Button>

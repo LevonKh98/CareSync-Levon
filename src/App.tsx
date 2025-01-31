@@ -1,15 +1,16 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import StaffLogin from "./frames/StaffLogin";
-import StaffPage from "./frames/StaffPage"; 
+import StaffPage from "./frames/StaffPage";
 import AdminLogin from "./frames/AdminLogin";
 import AdminPage from "./frames/AdminPage";
+import Help from "./frames/Help";
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Route for the Login Page comment here 2 */} 
+        {/* Route for the Login Page comment here 2 */}
         <Route path="/" element={<StaffLogin />} />
 
         {/* Route for the Staff Page */}
@@ -20,6 +21,9 @@ function App() {
 
         {/* Route for the AdminPage Page */}
         <Route path="/adminPage" element={<AdminPage />} />
+
+        <Route path="/" element={<StaffLogin />} />
+        <Route path="/help" element={<Help />} />
       </Routes>
     </Router>
   );
