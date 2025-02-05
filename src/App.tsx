@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import StaffLogin from "./frames/StaffLogin";
 import StaffPage from "./frames/StaffPage";
-import StaffPage from "./frames/StaffPage";
 import AdminLogin from "./frames/AdminLogin";
 import AdminPage from "./frames/AdminPage";
 import Help from "./frames/Help";
