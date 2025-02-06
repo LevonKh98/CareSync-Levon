@@ -37,7 +37,7 @@ const StaffLogin = () => {
         console.log("API Response:", response.data);
 
         if (response.data.success) {
-          // Navigate to StaffPage on successful login
+          // Navigate to StaffPage on successful loginn
           navigate("/staff");
         }
       })
