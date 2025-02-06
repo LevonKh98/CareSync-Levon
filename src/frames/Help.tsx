@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, QuestionIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -9,7 +9,6 @@ import {
   Input,
   Text,
   Textarea,
-  Image,
   useToast,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
@@ -36,7 +35,7 @@ const Help: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:5000/api/send-email", formData);
+      await axios.post("http://localhost:5000/api/send-email", formData);
       toast({
         title: "Success!",
         description: "Your message has been sent.",
@@ -58,8 +57,14 @@ const Help: React.FC = () => {
 
   return (
     <Flex height="100vh" width="100vw" bg="teal.600" align="center" justify="center">
+     {/* Back Button */}
       <Button position="absolute" top="20px" left="20px" onClick={() => navigate(-1)}>
         <ArrowBackIcon boxSize={7} />
+      </Button>
+
+      {/* FAQ Button */}
+      <Button position="absolute" top="20px" right="20px" colorScheme="teal" onClick={() => navigate("/faq")}>
+        <QuestionIcon boxSize={5} mr={2} /> FAQ
       </Button>
 
       <Box bg="white" p={8} borderRadius="lg">
