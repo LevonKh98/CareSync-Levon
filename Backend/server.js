@@ -1,131 +1,123 @@
 const express = require("express");
-const cors = require("cors"); // Import CORS
+const cors = require("cors"); 
 const bcrypt = require("bcrypt");
-const { verifyStaffCredentials, verifyAdminCredentials } = require("./queries"); // Import queries
+const nodemailer = require("nodemailer");
+require("dotenv").config(); 
+console.log("Email User:", process.env.EMAIL_USER);
+console.log("Email Pass:", process.env.EMAIL_PASS ? "Loaded" : "Missing");
+const { verifyStaffCredentials, verifyAdminCredentials } = require("./queries"); 
+
+
 const app = express();
-
-// Use CORS middleware
-app.use(cors()); // Allow all origins (you can restrict this if needed)
-
-// Middleware to parse JSON requests
-app.use(express.json());
+app.use(cors());
+app.use(express.json()); 
 
 // Login API for Staff
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
-
-  // Validate that username and password are provided
   if (!username || !password) {
-    return res.status(400).json({
-      success: false,
-      message: "Username and password are required",
-    });
+    return res.status(400).json({ success: false, message: "Username and password are required" });
   }
 
-  // Query the database to check for user
   verifyStaffCredentials(username, (err, results) => {
     if (err) {
       console.error("Database query error:", err);
-      return res.status(500).json({
-        success: false,
-        message: "Database error",
-      });
+      return res.status(500).json({ success: false, message: "Database error" });
     }
 
     if (results.length > 0) {
       const user = results[0];
-
-      // Compare hashed password with the provided password
       bcrypt.compare(password, user.password, (error, isMatch) => {
         if (error) {
           console.error("Error comparing passwords:", error);
-          return res.status(500).json({
-            success: false,
-            message: "Error validating credentials",
-          });
+          return res.status(500).json({ success: false, message: "Error validating credentials" });
         }
 
         if (isMatch) {
-          res.json({
-            success: true,
-            message: "Login successful",
-          });
+          res.json({ success: true, message: "Login successful" });
         } else {
-          res.status(401).json({
-            success: false,
-            message: "Invalid username or password",
-          });
+          res.status(401).json({ success: false, message: "Invalid username or password" });
         }
       });
     } else {
-      res.status(401).json({
-        success: false,
-        message: "Invalid username or password",
-      });
+      res.status(401).json({ success: false, message: "Invalid username or password" });
     }
   });
 });
 
-
-//-----------------------------------------------------------------------------------------------------
 // Login API for Admin
 app.post("/api/loginAdmin", (req, res) => {
   const { username, password } = req.body;
-
-  // Validate that username and password are provided
   if (!username || !password) {
-    return res.status(400).json({
-      success: false,
-      message: "Username and password are required",
-    });
+    return res.status(400).json({ success: false, message: "Username and password are required" });
   }
 
-  // Query the database to check for user
   verifyAdminCredentials(username, (err, results) => {
     if (err) {
       console.error("Database query error:", err);
-      return res.status(500).json({
-        success: false,
-        message: "Database error",
-      });
+      return res.status(500).json({ success: false, message: "Database error" });
     }
 
     if (results.length > 0) {
       const user = results[0];
-
-      // Compare hashed password with the provided password
       bcrypt.compare(password, user.password, (error, isMatch) => {
         if (error) {
           console.error("Error comparing passwords:", error);
-          return res.status(500).json({
-            success: false,
-            message: "Error validating credentials",
-          });
+          return res.status(500).json({ success: false, message: "Error validating credentials" });
         }
 
         if (isMatch) {
-          res.json({
-            success: true,
-            message: "Login successful",
-          });
+          res.json({ success: true, message: "Login successful" });
         } else {
-          res.status(401).json({
-            success: false,
-            message: "Invalid username or password",
-          });
+          res.status(401).json({ success: false, message: "Invalid username or password" });
         }
       });
     } else {
-      res.status(401).json({
-        success: false,
-        message: "Invalid username or password",
-      });
+      res.status(401).json({ success: false, message: "Invalid username or password" });
     }
   });
 });
 
-// Start the server
-const PORT = 5000; // Replace with your actual port number if different
+// -----------------------------------------------------------------------------------
+// Email functionality
+app.post("/api/send-email", async (req, res) => {
+  const { firstName, lastName, email, message } = req.body;
+
+  if (!firstName || !lastName || !email || !message) {
+    return res.status(400).json({ success: false, message: "All fields are required" });
+  }
+
+  // Nodemailer Transporter Setup
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465, // Use 465 for SSL or 587 for TLS
+    secure: true, // Use `true` for 465, `false` for 587
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+  
+
+  const mailOptions = {
+    from: email, // Sender's email
+    to: process.env.RECEIVER_EMAIL, // Your email
+    subject: `New Help Request from ${firstName} ${lastName}`,
+    text: `Name: ${firstName} ${lastName}\nEmail: ${email}\n\nMessage:\n${message}`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ success: true, message: "Email sent successfully!" });
+  } catch (error) {
+    console.error("Error sending email:", error);
+    res.status(500).json({ success: false, message: "Failed to send email" });
+  }
+});
+
+// -----------------------------------------------------------------------------------
+
+const PORT = 5000; // Ensure this is the correct port for your backend
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
