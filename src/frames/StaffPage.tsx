@@ -1,13 +1,44 @@
-import React from "react";
-import { Box, Heading, Text, Button, Flex, Stack } from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Heading,
+  Text,
+  Button,
+  Flex,
+  Stack,
+  Spinner,
+} from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"; // Import Axios for API calls
 
 const StaffPage = () => {
   const navigate = useNavigate();
+  const [todaysAppointments, setTodaysAppointments] = useState([]); // Store fetched appointments
+  const [loading, setLoading] = useState(true); // State for loading status
+  const [error, setError] = useState(""); // Store errors if any
 
-  //handles logout
+  // Fetch today's appointments from the backend API
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/todays-appointments"
+        );
+        setTodaysAppointments(response.data.data); // Store appointments in state
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching appointments:", err);
+        setError("Failed to load appointments.");
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
+  }, []); // Runs only once when the component mounts
+
+  // Handle logout
   const handleLogout = () => {
-    navigate("/"); // Navigates to the staff login page
+    navigate("/");
   };
 
   return (
@@ -29,27 +60,9 @@ const StaffPage = () => {
         mx="auto"
         position="relative"
       >
-        {/* Top-Right Buttons */}
+        {/* Logout Button */}
         <Box position="absolute" top={4} right={4} display="flex" gap={4}>
-          <Button
-            colorScheme="teal"
-            size="sm"
-            onClick={() => alert("View Notifications")}
-          >
-            Notifications
-          </Button>
-          <Button
-            colorScheme="teal"
-            size="sm"
-            onClick={() => alert("Open Settings")}
-          >
-            Settings
-          </Button>
-          <Button
-            colorScheme="red"
-            size="sm"
-            onClick={handleLogout} // logout function
-          >
+          <Button colorScheme="red" size="sm" onClick={handleLogout}>
             Logout
           </Button>
         </Box>
@@ -76,15 +89,29 @@ const StaffPage = () => {
             <Heading as="h3" size="md" mb={2} color="gray.700">
               Today's Appointments
             </Heading>
-            <Text color="gray.600">15 Appointments Scheduled</Text>
-            <Button
-              mt={4}
-              colorScheme="teal"
-              size="sm"
-              onClick={() => alert("View Appointments")}
-            >
-              View Details
-            </Button>
+
+            {/* Show Loading or Error Messages */}
+            {loading ? (
+              <Spinner size="lg" color="teal.500" />
+            ) : error ? (
+              <Text color="red.500">{error}</Text>
+            ) : (
+              <>
+                <Text color="gray.600">
+                  {todaysAppointments.length} Appointments Scheduled
+                </Text>
+                <Button
+                  mt={4}
+                  colorScheme="teal"
+                  size="sm"
+                  onClick={() =>
+                    alert(JSON.stringify(todaysAppointments, null, 2))
+                  }
+                >
+                  View Details
+                </Button>
+              </>
+            )}
           </Box>
 
           {/* Look Up Patient Widget */}
