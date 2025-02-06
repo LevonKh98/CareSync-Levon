@@ -21,7 +21,7 @@ function App() {
         {/* Route for the AdminLogin Page */}
         <Route path="/adminLogin" element={<AdminLogin />} />
 
-        {/* Route for the AdminPage Page */}
+        {/* Route for the AdminPage Page ff */}
         <Route path="/adminPage" element={<AdminPage />} />
 
         <Route path="/help" element={<Help />} />
