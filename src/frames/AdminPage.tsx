@@ -72,7 +72,7 @@ const AdminPage = () => {
 
 
         <Stack spacing={6}>
-          {/* Manage Users */}
+          {/* Add Users */}
           <Box
             bg="gray.100"
             p={6}
@@ -81,20 +81,20 @@ const AdminPage = () => {
             textAlign="center"
           >
             <Heading as="h3" size="md" mb={2} color="gray.700">
-              Manage Users
+              New Users
             </Heading>
-            <Text color="gray.600">Add or Remove Users</Text>
+            <Text color="gray.600">Add Users.</Text>
             <Button
               mt={4}
               colorScheme="teal"
               size="sm"
-              onClick={() => alert('View Appointments')}
+              onClick={() => alert('Add user In PROGRESS')}
             >
               Manage
             </Button>
           </Box>
 
-          {/* Activity logs */}
+          {/* Remove user */}
           <Box
             bg="gray.100"
             p={6}
@@ -103,20 +103,20 @@ const AdminPage = () => {
             textAlign="center"
           >
             <Heading as="h3" size="md" mb={2} color="gray.700">
-              View Activity Logs
+              Remove Users
             </Heading>
-            <Text color="gray.600">See Recent Changes.</Text>
+            <Text color="gray.600">See list of Users.</Text>
             <Button
               mt={4}
               colorScheme="teal"
               size="sm"
-              onClick={() => alert('View Activity Logs')}
+              onClick={() => alert('Remove In PROGRESS')}
             >
-              View Details
+              Remove
             </Button>
           </Box>
 
-          {/* Patient Records */}
+          {/* Update User */}
           <Box
             bg="gray.100"
             p={6}
@@ -125,16 +125,16 @@ const AdminPage = () => {
             textAlign="center"
           >
             <Heading as="h3" size="md" mb={2} color="gray.700">
-              Edit Patient Records
+              Edit User Account Details
             </Heading>
-            <Text color="gray.600">Make changes to User medical files.</Text>
+            <Text color="gray.600">Make changes to User account.</Text>
             <Button
               mt={4}
               colorScheme="teal"
               size="sm"
-              onClick={() => alert('Manage Patients')}
+              onClick={() => alert('Edit In PROGRESS')}
             >
-              Manage Appointments
+              Edit
             </Button>
           </Box>
         </Stack>
