@@ -1,13 +1,13 @@
-import React from 'react';
-import { Box, Heading, Text, Button, Flex, Stack } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { Box, Heading, Text, Button, Flex, Stack } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const AdminPage = () => {
   const navigate = useNavigate();
 
   //handles logout
   const handleLogout = () => {
-    navigate('adminLogin'); // Goes to the admin login page
+    navigate("/adminLogin"); // Goes to the admin login page
   };
 
   return (
@@ -27,27 +27,21 @@ const AdminPage = () => {
         width="100%"
         maxWidth="800px"
         mx="auto"
-        position="relative" 
+        position="relative"
       >
         {/* Top-Right Buttons */}
-        <Box
-          position="absolute"
-          top={4}
-          right={4}
-          display="flex"
-          gap={4}
-        >
+        <Box position="absolute" top={4} right={4} display="flex" gap={4}>
           <Button
             colorScheme="teal"
             size="sm"
-            onClick={() => alert('View Notifications')}
+            onClick={() => alert("View Notifications")}
           >
             Notifications
           </Button>
           <Button
             colorScheme="teal"
             size="sm"
-            onClick={() => alert('Open Settings')}
+            onClick={() => alert("Open Settings")}
           >
             Settings
           </Button>
@@ -70,7 +64,6 @@ const AdminPage = () => {
           Welcome, Administrator! Here's an overview of your tasks.
         </Text>
 
-
         <Stack spacing={6}>
           {/* Add Users */}
           <Box
@@ -88,7 +81,7 @@ const AdminPage = () => {
               mt={4}
               colorScheme="teal"
               size="sm"
-              onClick={() => alert('Add user In PROGRESS')}
+              onClick={() => alert("Add user In PROGRESS")}
             >
               Manage
             </Button>
@@ -110,7 +103,7 @@ const AdminPage = () => {
               mt={4}
               colorScheme="teal"
               size="sm"
-              onClick={() => alert('Remove In PROGRESS')}
+              onClick={() => alert("Remove In PROGRESS")}
             >
               Remove
             </Button>
@@ -132,7 +125,7 @@ const AdminPage = () => {
               mt={4}
               colorScheme="teal"
               size="sm"
-              onClick={() => alert('Edit In PROGRESS')}
+              onClick={() => alert("Edit In PROGRESS")}
             >
               Edit
             </Button>
