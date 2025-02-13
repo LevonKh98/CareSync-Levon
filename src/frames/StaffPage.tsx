@@ -38,7 +38,7 @@ const StaffPage = () => {
 
   // Handle logout
   const handleLogout = () => {
-    navigate("/");
+    navigate("/"); // Navigates to the staff login page
   };
 
   return (
@@ -62,7 +62,25 @@ const StaffPage = () => {
       >
         {/* Logout Button */}
         <Box position="absolute" top={4} right={4} display="flex" gap={4}>
-          <Button colorScheme="red" size="sm" onClick={handleLogout}>
+          <Button
+            colorScheme="teal"
+            size="sm"
+            onClick={() => alert("View Notifications")}
+          >
+            Notifications
+          </Button>
+          <Button
+            colorScheme="teal"
+            size="sm"
+            onClick={() => alert("Open Settings")}
+          >
+            Settings
+          </Button>
+          <Button
+            colorScheme="red"
+            size="sm"
+            onClick={handleLogout} // logout function
+          >
             Logout
           </Button>
         </Box>
