@@ -25,7 +25,9 @@ const Help: React.FC = () => {
   });
 
   // Handle input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
@@ -56,37 +58,62 @@ const Help: React.FC = () => {
   };
 
   return (
-    <Flex height="100vh" width="100vw" bg="teal.600" align="center" justify="center">
-     {/* Back Button */}
-      <Button position="absolute" top="20px" left="20px" onClick={() => navigate(-1)}>
+    <Flex
+      height="100vh"
+      width="100vw"
+      bg="teal.600"
+      align="center"
+      justify="center"
+    >
+      {/* Back Button */}
+      <Button
+        position="absolute"
+        top="20px"
+        left="20px"
+        onClick={() => navigate(-1)}
+      >
         <ArrowBackIcon boxSize={7} />
       </Button>
 
       {/* FAQ Button */}
-      <Button position="absolute" top="20px" right="20px" colorScheme="teal" onClick={() => navigate("/faq")}>
+      <Button
+        position="absolute"
+        top="20px"
+        right="20px"
+        colorScheme="teal"
+        onClick={() => navigate("/faq")}
+      >
         <QuestionIcon boxSize={5} mr={2} /> FAQ
       </Button>
 
       <Box bg="white" p={8} borderRadius="lg">
-        <Text fontSize="2xl" fontWeight="bold" color="teal.700" mb="4">Contact Us</Text>
+        <Text fontSize="2xl" fontWeight="bold" color="teal.700" mb="4">
+          Contact Us
+        </Text>
         <form onSubmit={handleSubmit}>
           <FormControl id="firstName" isRequired>
-            <FormLabel>First Name</FormLabel>
+            <FormLabel color="gray.700">First Name</FormLabel>
             <Input value={formData.firstName} onChange={handleChange} />
           </FormControl>
           <FormControl id="lastName" isRequired>
-            <FormLabel>Last Name</FormLabel>
+            <FormLabel color="gray.700">Last Name</FormLabel>
             <Input value={formData.lastName} onChange={handleChange} />
           </FormControl>
           <FormControl id="email" isRequired>
-            <FormLabel>Email</FormLabel>
-            <Input type="email" value={formData.email} onChange={handleChange} />
+            <FormLabel color="gray.700">Email</FormLabel>
+            <Input
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+            />
           </FormControl>
           <FormControl id="message" isRequired>
-            <FormLabel>Message</FormLabel>
+            <FormLabel color="gray.700">Message</FormLabel>
             <Textarea value={formData.message} onChange={handleChange} />
           </FormControl>
-          <Button type="submit" colorScheme="teal" mt={4} width="full">Send Message</Button>
+          <Button type="submit" colorScheme="teal" mt={4} width="full">
+            Send Message
+          </Button>
         </form>
       </Box>
     </Flex>
