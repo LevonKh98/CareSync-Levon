@@ -5,7 +5,7 @@ import StaffPage from "./frames/StaffPage";
 import AdminLogin from "./frames/AdminLogin";
 import AdminPage from "./frames/AdminPage";
 import Help from "./frames/Help";
-import ForgotPassword from "./components/ForgotPassword";
+import FAQ from "./frames/FAQ";
 
 function App() {
   return (
@@ -16,13 +16,10 @@ function App() {
         <Route path="/" element={<StaffLogin />} />
         <Route path="/staff" element={<StaffPage />} />
         <Route path="/adminLogin" element={<AdminLogin />} />
-
-        {/* Route for the AdminPage Page ff */}
         <Route path="/adminPage" element={<AdminPage />} />
 
         <Route path="/help" element={<Help />} />
-
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/faq" element={<FAQ />} />
       </Routes>
     </Router>
   );

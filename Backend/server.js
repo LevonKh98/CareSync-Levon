@@ -53,23 +53,12 @@ app.post("/api/login", (req, res) => {
         }
 
         if (isMatch) {
-<<<<<<< HEAD
           res.json({ success: true, message: "Login successful" });
         } else {
-=======
-          console.log("✅ Login successful!");
-          res.json({ success: true, message: "Login successful" });
-        } else {
-          console.log("❌ Invalid password");
->>>>>>> origin/Edita's-Branch
           res.status(401).json({ success: false, message: "Invalid username or password" });
         }
       });
     } else {
-<<<<<<< HEAD
-=======
-      console.log("❌ User not found");
->>>>>>> origin/Edita's-Branch
       res.status(401).json({ success: false, message: "Invalid username or password" });
     }
   });
@@ -93,10 +82,6 @@ app.post("/api/loginAdmin", (req, res) => {
 
     if (results.length > 0) {
       const user = results[0];
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/Edita's-Branch
       bcrypt.compare(password, user.password, (error, isMatch) => {
         if (error) {
           console.error("Error comparing passwords:", error);
@@ -131,7 +116,6 @@ app.get("/api/todays-appointments", (req, res) => {
   });
 });
 
-<<<<<<< HEAD
 // -----------------------------------------------------------------------------------
 // Email functionality
 app.post("/api/send-email", async (req, res) => {
@@ -174,38 +158,4 @@ app.post("/api/send-email", async (req, res) => {
 const PORT = 5000; // Ensure this is the correct port for your backend
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
-=======
-// =============================
-// 🔹 Look Up Patient API
-// =============================
-app.get("/api/patients", (req, res) => {
-  const { query } = req.query; // Get search input from frontend
-
-  if (!query) {
-    return res.status(400).json({ success: false, message: "Search query required" });
-  }
-
-  // Search patients by name or ID
-  const sql = "SELECT * FROM patients WHERE name LIKE ? OR CAST(patient_id AS CHAR) = ?";
-db.query(sql, [`%${query}%`, query.toString()], (err, results) => {
-    if (err) {
-      console.error("❌ Error fetching patients:", err);
-      return res.status(500).json({ success: false, message: "Database error" });
-    }
-
-    if (results.length === 0) {
-      return res.json({ success: false, message: "No patients found" });
-    }
-
-    res.json({ success: true, data: results });
-  });
-});
-
-// =============================
-// 🔹 Start the Server
-// =============================
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`✅ Server is running on http://localhost:${PORT}`);
->>>>>>> origin/Edita's-Branch
 });
