@@ -31,22 +31,27 @@ app.post("/api/login", (req, res) => {
       const user = results[0];
 
       bcrypt.compare(password, user.password, (error, isMatch) => {
+        console.log("🔍 Password comparison result:", isMatch);
+
         if (error) {
-          console.error("Error comparing passwords:", error);
+          console.error("❌ Error comparing passwords:", error);
           return res.status(500).json({ success: false, message: "Error validating credentials" });
         }
 
         if (isMatch) {
+          console.log("✅ Login successful!");
           res.json({ success: true, message: "Login successful" });
         } else {
+          console.log("❌ Invalid password");
           res.status(401).json({ success: false, message: "Invalid username or password" });
         }
       });
     } else {
+      console.log("❌ User not found");
       res.status(401).json({ success: false, message: "Invalid username or password" });
     }
   });
-});
+}); // 
 
 // =============================
 // 🔹 Admin Login API
@@ -100,6 +105,32 @@ app.get("/api/todays-appointments", (req, res) => {
       console.error("Error fetching appointments:", err);
       return res.status(500).json({ success: false, message: "Database error" });
     }
+    res.json({ success: true, data: results });
+  });
+});
+
+// =============================
+// 🔹 Look Up Patient API
+// =============================
+app.get("/api/patients", (req, res) => {
+  const { query } = req.query; // Get search input from frontend
+
+  if (!query) {
+    return res.status(400).json({ success: false, message: "Search query required" });
+  }
+
+  // Search patients by name or ID
+  const sql = "SELECT * FROM patients WHERE name LIKE ? OR CAST(patient_id AS CHAR) = ?";
+db.query(sql, [`%${query}%`, query.toString()], (err, results) => {
+    if (err) {
+      console.error("❌ Error fetching patients:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
+    }
+
+    if (results.length === 0) {
+      return res.json({ success: false, message: "No patients found" });
+    }
+
     res.json({ success: true, data: results });
   });
 });
