@@ -6,6 +6,7 @@ import AdminLogin from "./frames/AdminLogin";
 import AdminPage from "./frames/AdminPage";
 import Help from "./frames/Help";
 import FAQ from "./frames/FAQ";
+import ForgotPassword from "./components/ForgotPassword";
 
 function App() {
   return (
@@ -19,8 +20,9 @@ function App() {
         <Route path="/adminPage" element={<AdminPage />} />
 
         <Route path="/help" element={<Help />} />
-        <Route path="/help" element={<Help />} />
         <Route path="/faq" element={<FAQ />} />
+
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </Router>
   );

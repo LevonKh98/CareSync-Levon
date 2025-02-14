@@ -28,6 +28,8 @@ app.post("/api/login", (req, res) => {
       const user = results[0];
 
       bcrypt.compare(password, user.password, (error, isMatch) => {
+        console.log("🔍 Password comparison result:", isMatch);
+
         if (error) {
           console.error("Error comparing passwords:", error);
           return res.status(500).json({ success: false, message: "Error validating credentials" });
@@ -43,7 +45,7 @@ app.post("/api/login", (req, res) => {
       res.status(401).json({ success: false, message: "Invalid username or password" });
     }
   });
-});
+}); // 
 
 // =============================
 // 🔹 Admin Login API
