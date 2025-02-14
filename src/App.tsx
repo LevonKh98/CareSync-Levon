@@ -5,7 +5,7 @@ import StaffPage from "./frames/StaffPage";
 import AdminLogin from "./frames/AdminLogin";
 import AdminPage from "./frames/AdminPage";
 import Help from "./frames/Help";
-import ForgotPassword from "./components/ForgotPassword";
+
 import FAQ from "./frames/FAQ";
 
 function App() {
@@ -21,7 +21,6 @@ function App() {
 
         <Route path="/help" element={<Help />} />
 
-        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/help" element={<Help />} />
         <Route path="/faq" element={<FAQ />} />
       </Routes>
