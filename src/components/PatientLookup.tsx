@@ -14,10 +14,26 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 
-const PatientLookup = ({ isOpen, onClose }) => {
-  const [query, setQuery] = useState("");
-  const [patients, setPatients] = useState([]);
-  const [error, setError] = useState("");
+// Define props type
+interface PatientLookupProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+// Define patient type
+interface Patient {
+  patient_id: string;
+  name: string;
+  dob: string;
+  address: string;
+  phone_number: string;
+  email: string;
+}
+
+const PatientLookup: React.FC<PatientLookupProps> = ({ isOpen, onClose }) => {
+  const [query, setQuery] = useState<string>("");
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [error, setError] = useState<string>("");
 
   const searchPatients = async () => {
     if (!query.trim()) {
@@ -28,11 +44,15 @@ const PatientLookup = ({ isOpen, onClose }) => {
     setError("");
 
     try {
-      const response = await axios.get(`http://localhost:5000/api/patients?query=${query}`);
+      const response = await axios.get<{
+        success: boolean;
+        data: Patient[];
+        message?: string;
+      }>(`http://localhost:5000/api/patients?query=${query}`);
       if (response.data.success) {
         setPatients(response.data.data);
       } else {
-        setError(response.data.message);
+        setError(response.data.message || "Error fetching patients");
         setPatients([]);
       }
     } catch (err) {
@@ -58,14 +78,25 @@ const PatientLookup = ({ isOpen, onClose }) => {
             Search
           </Button>
 
-          {error && <Text color="red.500" mt={3}>{error}</Text>}
+          {error && (
+            <Text color="red.500" mt={3}>
+              {error}
+            </Text>
+          )}
 
           <VStack mt={4} spacing={3} align="start">
             {patients.map((patient) => (
-              <Box key={patient.patient_id} p={3} borderWidth="1px" borderRadius="md">
+              <Box
+                key={patient.patient_id}
+                p={3}
+                borderWidth="1px"
+                borderRadius="md"
+              >
                 <Text fontWeight="bold">{patient.name}</Text>
                 <Text>ID: {patient.patient_id}</Text>
-                <Text>Date of Birth: {new Date(patient.dob).toLocaleDateString()}</Text>
+                <Text>
+                  Date of Birth: {new Date(patient.dob).toLocaleDateString()}
+                </Text>
                 <Text>Address: {patient.address}</Text>
                 <Text>Phone: {patient.phone_number}</Text>
                 <Text>Email: {patient.email}</Text>

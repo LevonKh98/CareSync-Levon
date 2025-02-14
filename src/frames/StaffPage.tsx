@@ -11,10 +11,9 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import PatientLookup from "../components/PatientLookup.jsx";
+import PatientLookup from "../components/PatientLookup.js";
 
-
- // Import Patient Lookup Component
+// Import Patient Lookup Component
 
 const StaffPage = () => {
   const navigate = useNavigate();
@@ -28,7 +27,9 @@ const StaffPage = () => {
   React.useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/todays-appointments");
+        const response = await axios.get(
+          "http://localhost:5000/api/todays-appointments"
+        );
         setTodaysAppointments(response.data.data);
         setLoading(false);
       } catch (err) {
@@ -67,7 +68,9 @@ const StaffPage = () => {
       >
         {/* Logout Button */}
         <Box position="absolute" top={4} right={4} display="flex" gap={4}>
-          <Button colorScheme="red" size="sm" onClick={handleLogout}>Logout</Button>
+          <Button colorScheme="red" size="sm" onClick={handleLogout}>
+            Logout
+          </Button>
         </Box>
 
         {/* Staff Home Heading */}
@@ -116,17 +119,37 @@ const StaffPage = () => {
           </Box>
 
           {/* Look Up Patient Widget */}
-          <Box bg="gray.100" p={6} borderRadius="md" shadow="sm" textAlign="center">
-            <Heading as="h3" size="md" mb={2} color="gray.700">Look Up Patient</Heading>
+          <Box
+            bg="gray.100"
+            p={6}
+            borderRadius="md"
+            shadow="sm"
+            textAlign="center"
+          >
+            <Heading as="h3" size="md" mb={2} color="gray.700">
+              Look Up Patient
+            </Heading>
             <Text color="gray.600">Find patient information quickly.</Text>
-            <Button mt={4} colorScheme="teal" size="sm" onClick={onOpen}>Look Up Patient</Button>
+            <Button mt={4} colorScheme="teal" size="sm" onClick={onOpen}>
+              Look Up Patient
+            </Button>
           </Box>
 
           {/* Manage Appointments Widget */}
-          <Box bg="gray.100" p={6} borderRadius="md" shadow="sm" textAlign="center">
-            <Heading as="h3" size="md" mb={2} color="gray.700">Manage Appointments</Heading>
+          <Box
+            bg="gray.100"
+            p={6}
+            borderRadius="md"
+            shadow="sm"
+            textAlign="center"
+          >
+            <Heading as="h3" size="md" mb={2} color="gray.700">
+              Manage Appointments
+            </Heading>
             <Text color="gray.600">View and organize all appointments.</Text>
-            <Button mt={4} colorScheme="teal" size="sm" onClick={onOpen}>Manage Appointments</Button>
+            <Button mt={4} colorScheme="teal" size="sm" onClick={onOpen}>
+              Manage Appointments
+            </Button>
           </Box>
         </Stack>
       </Box>
