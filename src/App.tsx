@@ -6,6 +6,7 @@ import AdminLogin from "./frames/AdminLogin";
 import AdminPage from "./frames/AdminPage";
 import Help from "./frames/Help";
 import FAQ from "./frames/FAQ";
+import Appointments from "./frames/Appointments";
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
         <Route path="/staff" element={<StaffPage />} />
         <Route path="/adminLogin" element={<AdminLogin />} />
         <Route path="/adminPage" element={<AdminPage />} />
-
+        <Route path="/appointments" element={<Appointments />} />
         <Route path="/help" element={<Help />} />
         <Route path="/faq" element={<FAQ />} />
       </Routes>
