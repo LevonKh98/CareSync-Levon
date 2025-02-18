@@ -8,6 +8,13 @@ import {
   Stack,
   Spinner,
   useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -16,20 +23,71 @@ import axios from "axios";
 
 const StaffPage = () => {
   const navigate = useNavigate();
-  const [todaysAppointments, setTodaysAppointments] = useState([]);
+  const [todaysAppointments, setTodaysAppointments] = useState<Appointment[]>(
+    []
+  );
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [patientNames, setPatientNames] = useState<{ [key: number]: string }>(
+    {}
+  );
 
-  const { isOpen, onOpen, onClose } = useDisclosure(); // Controls the modal visibility
+  useEffect(() => {
+    const fetchPatients = async () => {
+      const newPatientNames: { [key: number]: string } = {};
 
-  // Fetch today's appointments from backend
+      for (const appt of todaysAppointments) {
+        if (!patientNames[appt.patient_id]) {
+          // Avoid duplicate API calls
+          const result = await getPatient(appt.patient_id);
+          if (result && result.success) {
+            newPatientNames[appt.patient_id] = result.data.name;
+          }
+        }
+      }
+
+      setPatientNames((prev) => ({ ...prev, ...newPatientNames }));
+    };
+
+    if (todaysAppointments.length > 0) {
+      fetchPatients();
+    }
+  }, [todaysAppointments]);
+
+  interface Appointment {
+    patient_id: number;
+  }
+
+  const {
+    isOpen: isAppsOpen,
+    onOpen: openApps,
+    onClose: closeApps,
+  } = useDisclosure();
+
+  const getPatient = async (patientId: number) => {
+    try {
+      const response = await fetch(`/api/getPatient/${patientId}`);
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Error fetching patient");
+      }
+
+      return result; // Return the full result without extracting variables
+    } catch (error) {
+      console.error("Error:", error);
+      return null;
+    }
+  };
   React.useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const response = await axios.get(
+        const response = await axios.get<{ data: Appointment[] }>(
           "http://localhost:5000/api/todays-appointments"
         );
-        setTodaysAppointments(response.data.data);
+        setTodaysAppointments(response.data.data); // ✅ No more TypeScript error
         setLoading(false);
       } catch (err) {
         console.error("Error fetching appointments:", err);
@@ -39,11 +97,15 @@ const StaffPage = () => {
     };
 
     fetchAppointments();
-  }, []); // Runs only once when the component mounts
+  }, []);
 
   // Handle logout
   const handleLogout = () => {
     navigate("/");
+  };
+
+  const handleManageAppointments = () => {
+    navigate("/appointments");
   };
 
   return (
@@ -103,14 +165,7 @@ const StaffPage = () => {
                 <Text color="gray.600">
                   {todaysAppointments.length} Appointments Scheduled
                 </Text>
-                <Button
-                  mt={4}
-                  colorScheme="teal"
-                  size="sm"
-                  onClick={() =>
-                    alert(JSON.stringify(todaysAppointments, null, 2))
-                  }
-                >
+                <Button mt={4} colorScheme="teal" size="sm" onClick={openApps}>
                   View Details
                 </Button>
               </>
@@ -130,7 +185,7 @@ const StaffPage = () => {
             </Heading>
             <Text color="gray.600">Find patient information quickly.</Text>
             <Button mt={4} colorScheme="teal" size="sm" onClick={onOpen}>
-              Look Up Patient
+              Look Up
             </Button>
           </Box>
 
@@ -146,7 +201,12 @@ const StaffPage = () => {
               Manage Appointments
             </Heading>
             <Text color="gray.600">View and organize all appointments.</Text>
-            <Button mt={4} colorScheme="teal" size="sm" onClick={onOpen}>
+            <Button
+              mt={4}
+              colorScheme="teal"
+              size="sm"
+              onClick={handleManageAppointments}
+            >
               Manage Appointments
             </Button>
           </Box>

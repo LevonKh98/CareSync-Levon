@@ -136,6 +136,22 @@ app.post("/api/send-email", async (req, res) => {
   }
 });
 
+app.get("/api/getPatient/:id", (req, res) => {
+  const patientId = req.params.id;
+  const query = "Select * from patients where patient_id = ?";
+
+  db.query(query, [patientId], (err, results) => {
+    if(err) {
+      console.error("Database error: ", err);
+      return res.status(500).json({success: false, message: "Database error"});
+    }
+    if(results.length === 0) {
+      return res.status(404).json({success: false, message: "Patient not found"});
+    }
+    res.json({success: true, data: results[0] })
+  })
+})
+
 // -----------------------------------------------------------------------------------
 
 const PORT = 5000; // Ensure this is the correct port for your backend
