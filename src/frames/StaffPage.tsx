@@ -11,7 +11,6 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import PatientLookup from "../components/PatientLookup.js";
 
 // Import Patient Lookup Component
 
@@ -40,7 +39,6 @@ const StaffPage = () => {
     };
 
     fetchAppointments();
-<<<<<<< HEAD
   }, []); // Runs only once when the component mounts
 
   // Handle logout
@@ -115,10 +113,6 @@ const StaffPage = () => {
                 >
                   View Details
                 </Button>
-=======
-                <Text color="gray.600">{todaysAppointments.length} Appointments Scheduled</Text>
-                <Button mt={4} colorScheme="teal" size="sm" onClick={onOpen}>View Details</Button>
->>>>>>> origin/Edita's-Branch
               </>
             )}
           </Box>
@@ -160,7 +154,6 @@ const StaffPage = () => {
       </Box>
 
       {/* Include the Patient Lookup Component */}
-      <PatientLookup isOpen={isOpen} onClose={onClose} />
     </Flex>
   );
 };

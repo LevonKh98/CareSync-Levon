@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors"); 
 const bcrypt = require("bcrypt");
-<<<<<<< HEAD
 const { verifyStaffCredentials, verifyAdminCredentials } = require("./queries");
 const db = require("./db"); // MySQL Database Connection
 const app = express();
@@ -12,18 +11,6 @@ require("dotenv").config();
 console.log("Email User:", process.env.EMAIL_USER);
 console.log("Email Pass:", process.env.EMAIL_PASS ? "Loaded" : "Missing");
 
-=======
-const db = require("./db"); // MySQL Database Connection
-const { verifyStaffCredentials, verifyAdminCredentials } = require("./queries");
-
-const app = express();
-app.use(cors()); // Enable CORS for frontend connection
-app.use(express.json()); // Parse JSON requests
-
-// =============================
-// 🔹 Staff Login API
-// =============================
->>>>>>> origin/Edita's-Branch
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -44,11 +31,7 @@ app.post("/api/login", (req, res) => {
         console.log("🔍 Password comparison result:", isMatch);
 
         if (error) {
-<<<<<<< HEAD
           console.error("Error comparing passwords:", error);
-=======
-          console.error("❌ Error comparing passwords:", error);
->>>>>>> origin/Edita's-Branch
           return res.status(500).json({ success: false, message: "Error validating credentials" });
         }
 
