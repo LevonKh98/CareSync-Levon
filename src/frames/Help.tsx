@@ -86,18 +86,26 @@ const Help: React.FC = () => {
         <QuestionIcon boxSize={5} mr={2} /> FAQ
       </Button>
 
-      <Box bg="white" p={8} borderRadius="lg">
+      <Box bg="white" p={8} borderRadius="lg" width={700} height={500}>
         <Text fontSize="2xl" fontWeight="bold" color="teal.700" mb="4">
           Contact Us
         </Text>
         <form onSubmit={handleSubmit}>
           <FormControl id="firstName" isRequired>
             <FormLabel color="gray.700">First Name</FormLabel>
-            <Input value={formData.firstName} onChange={handleChange} />
+            <Input
+              value={formData.firstName}
+              color="black"
+              onChange={handleChange}
+            />
           </FormControl>
           <FormControl id="lastName" isRequired>
             <FormLabel color="gray.700">Last Name</FormLabel>
-            <Input value={formData.lastName} onChange={handleChange} />
+            <Input
+              value={formData.lastName}
+              onChange={handleChange}
+              color="black"
+            />
           </FormControl>
           <FormControl id="email" isRequired>
             <FormLabel color="gray.700">Email</FormLabel>
@@ -105,11 +113,16 @@ const Help: React.FC = () => {
               type="email"
               value={formData.email}
               onChange={handleChange}
+              color="black"
             />
           </FormControl>
           <FormControl id="message" isRequired>
             <FormLabel color="gray.700">Message</FormLabel>
-            <Textarea value={formData.message} onChange={handleChange} />
+            <Textarea
+              value={formData.message}
+              color="black"
+              onChange={handleChange}
+            />
           </FormControl>
           <Button type="submit" colorScheme="teal" mt={4} width="full">
             Send Message
