@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import PatientLookup from "../components/PatientLookup.tsx";
+import PatientLookup from "../components/PatientLookup.jsx";
 
 // Import Patient Lookup Component
 
