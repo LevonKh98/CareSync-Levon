@@ -18,7 +18,8 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import PatientLookup from "../components/PatientLookup.jsx";
+import PatientLookup from "../components/PatientLookup.tsx";
+import { format } from "date-fns";
 
 // Import Patient Lookup Component
 
@@ -28,6 +29,15 @@ const StaffPage = () => {
     []
   );
 
+  const [selectedPatient, setSelectedPatient] = useState<{
+    id: number;
+    name: string;
+    dob: string;
+    address: string;
+    phone_number: string;
+    email: string;
+  } | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -35,19 +45,38 @@ const StaffPage = () => {
     {}
   );
 
+  const handleShowPatientInfo = async (patientId: number) => {
+    const result = await getPatient(patientId);
+    if (result && result.success) {
+      setSelectedPatient({
+        id: result.data.patient_id,
+        name: result.data.name,
+        dob: result.data.dob,
+        address: result.data.address,
+        phone_number: result.data.phone_number,
+        email: result.data.email,
+      });
+    }
+  };
+
   useEffect(() => {
     const fetchPatients = async () => {
-      const newPatientNames: { [key: number]: string } = {};
+      const uniquePatientIds = [
+        ...new Set(todaysAppointments.map((appt) => appt.patient_id)),
+      ];
 
-      for (const appt of todaysAppointments) {
-        if (!patientNames[appt.patient_id]) {
-          // Avoid duplicate API calls
-          const result = await getPatient(appt.patient_id);
-          if (result && result.success) {
-            newPatientNames[appt.patient_id] = result.data.name;
+      const newPatientNames: { [key: number]: string } = { ...patientNames };
+
+      const fetchPromises = uniquePatientIds
+        .filter((id) => !patientNames[id]) // Only fetch if not already in state
+        .map(async (id) => {
+          const result = await getPatient(id);
+          if (result && result.success && result.data?.name) {
+            newPatientNames[id] = result.data.name;
           }
-        }
-      }
+        });
+
+      await Promise.all(fetchPromises);
 
       setPatientNames((prev) => ({ ...prev, ...newPatientNames }));
     };
@@ -58,7 +87,12 @@ const StaffPage = () => {
   }, [todaysAppointments]);
 
   interface Appointment {
+    appointment_id: number;
     patient_id: number;
+    doctor_id: number;
+    date: string;
+    time: string;
+    status: string;
   }
 
   const {
@@ -69,19 +103,22 @@ const StaffPage = () => {
 
   const getPatient = async (patientId: number) => {
     try {
-      const response = await fetch(`/api/getPatient/${patientId}`);
+      const response = await fetch(
+        `http://localhost:5000/api/getPatient/${patientId}`
+      );
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Error fetching patient");
+        throw new Error("Error fetching patient");
       }
 
-      return result; // Return the full result without extracting variables
+      return result; // Returns { success: true, data: { patient_id, name, ... } }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error fetching patient:", error);
       return null;
     }
   };
+
   React.useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -210,6 +247,115 @@ const StaffPage = () => {
             >
               Manage Appointments
             </Button>
+            {/* Appointments Modal */}
+            <Modal isOpen={isAppsOpen} onClose={closeApps}>
+              <ModalOverlay />
+              <ModalContent maxWidth="600px" width="90%">
+                <ModalHeader>
+                  Today's Appointments -{" "}
+                  {format(new Date(), "EEEE, MMMM d, yyyy")}
+                </ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  {todaysAppointments.length > 0 ? (
+                    <Stack spacing={3}>
+                      {todaysAppointments.map((appt) => (
+                        <Box
+                          key={appt.appointment_id}
+                          p={4}
+                          bg="gray.500"
+                          borderRadius="md"
+                        >
+                          <Flex justify="space-between" align="center">
+                            <Box>
+                              <Text fontWeight="bold">
+                                Patient ID: {appt.patient_id}
+                              </Text>
+                              <Text fontWeight="bold">
+                                Name:{" "}
+                                {patientNames[appt.patient_id] || "Loading..."}
+                              </Text>
+                              <Text>
+                                Time:{" "}
+                                {new Date(
+                                  `1970-01-01T${appt.time}`
+                                ).toLocaleTimeString("en-US", {
+                                  hour: "numeric",
+                                  minute: "2-digit",
+                                  hour12: true,
+                                })}
+                              </Text>
+                              <Text>Status: {appt.status}</Text>
+                            </Box>
+                            <Button
+                              size="sm"
+                              colorScheme="blue"
+                              onClick={() =>
+                                handleShowPatientInfo(appt.patient_id)
+                              }
+                            >
+                              Show Patient Full Info
+                            </Button>
+                          </Flex>
+                        </Box>
+                      ))}
+                    </Stack>
+                  ) : (
+                    <Text>No appointments for today.</Text>
+                  )}
+
+                  {/* Show Patient Full Info Below the List */}
+                  {selectedPatient && (
+                    <Box
+                      mt={6}
+                      p={4}
+                      bg="gray.500"
+                      borderRadius="md"
+                      position="relative"
+                    >
+                      {/* Close Button */}
+                      <Button
+                        size="xs"
+                        colorScheme="red"
+                        position="absolute"
+                        top="5px"
+                        right="5px"
+                        onClick={() => setSelectedPatient(null)}
+                      >
+                        ✕
+                      </Button>
+
+                      <Text fontWeight="bold" mb={2}>
+                        Full Patient Info
+                      </Text>
+                      <Text>
+                        <strong>ID:</strong> {selectedPatient.id}
+                      </Text>
+                      <Text>
+                        <strong>Name:</strong> {selectedPatient.name}
+                      </Text>
+                      <Text>
+                        <strong>DOB:</strong>{" "}
+                        {new Date(selectedPatient.dob).toLocaleDateString()}
+                      </Text>
+                      <Text>
+                        <strong>Address:</strong> {selectedPatient.address}
+                      </Text>
+                      <Text>
+                        <strong>Phone:</strong> {selectedPatient.phone_number}
+                      </Text>
+                      <Text>
+                        <strong>Email:</strong> {selectedPatient.email}
+                      </Text>
+                    </Box>
+                  )}
+                </ModalBody>
+
+                <ModalFooter>
+                  <Button onClick={closeApps}>Close</Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
           </Box>
         </Stack>
       </Box>

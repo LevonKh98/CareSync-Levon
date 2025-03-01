@@ -28,7 +28,9 @@ const PatientLookup = ({ isOpen, onClose }) => {
     setError("");
 
     try {
-      const response = await axios.get(`http://localhost:5000/api/patients?query=${query}`);
+      const response = await axios.get(
+        `http://localhost:5000/api/patients?query=${query}`
+      );
       if (response.data.success) {
         setPatients(response.data.data);
       } else {
@@ -58,14 +60,25 @@ const PatientLookup = ({ isOpen, onClose }) => {
             Search
           </Button>
 
-          {error && <Text color="red.500" mt={3}>{error}</Text>}
+          {error && (
+            <Text color="red.500" mt={3}>
+              {error}
+            </Text>
+          )}
 
           <VStack mt={4} spacing={3} align="start">
             {patients.map((patient) => (
-              <Box key={patient.patient_id} p={3} borderWidth="1px" borderRadius="md">
+              <Box
+                key={patient.patient_id}
+                p={3}
+                borderWidth="1px"
+                borderRadius="md"
+              >
                 <Text fontWeight="bold">{patient.name}</Text>
                 <Text>ID: {patient.patient_id}</Text>
-                <Text>Date of Birth: {new Date(patient.dob).toLocaleDateString()}</Text>
+                <Text>
+                  Date of Birth: {new Date(patient.dob).toLocaleDateString()}
+                </Text>
                 <Text>Address: {patient.address}</Text>
                 <Text>Phone: {patient.phone_number}</Text>
                 <Text>Email: {patient.email}</Text>
