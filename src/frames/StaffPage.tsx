@@ -215,34 +215,6 @@ const StaffPage = () => {
       </Box>
 
       {/* Include the Patient Lookup Component */}
-      <PatientLookup isOpen={isOpen} onClose={onClose} />
-
-      <Modal isOpen={isAppsOpen} onClose={closeApps}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Today's Appointments</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            {" "}
-            {todaysAppointments.length > 0 ? (
-              <Stack spacing={3}>
-                {todaysAppointments.map((appt, index) => (
-                  <Box key={index} p={3} bg="black.100" borderRadius="md">
-                    <Text>{patientNames[appt.patient_id]}</Text>
-                  </Box>
-                ))}
-              </Stack>
-            ) : (
-              <Text>No appointments scheduled for today.</Text>
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="red" onClick={closeApps}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </Flex>
   );
 };
