@@ -14,9 +14,32 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 
-const PatientLookup = ({ isOpen, onClose }) => {
+// ✅ Define Patient Type
+interface Patient {
+  patient_id: number;
+  name: string;
+  dob: string;
+  address: string;
+  phone_number: string;
+  email: string;
+}
+
+// ✅ Define API Response Type
+interface ApiResponse {
+  success: boolean;
+  data?: Patient[]; // `data` is optional to prevent errors when missing
+  message?: string; // `message` is optional to prevent TypeScript errors
+}
+
+// ✅ Define Props Type
+interface PatientLookupProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const PatientLookup: React.FC<PatientLookupProps> = ({ isOpen, onClose }) => {
   const [query, setQuery] = useState("");
-  const [patients, setPatients] = useState([]);
+  const [patients, setPatients] = useState<Patient[]>([]); // ✅ Fix: Type Patient[]
   const [error, setError] = useState("");
 
   const searchPatients = async () => {
@@ -28,13 +51,15 @@ const PatientLookup = ({ isOpen, onClose }) => {
     setError("");
 
     try {
-      const response = await axios.get(
+      // ✅ Updated API Response Type
+      const response = await axios.get<ApiResponse>(
         `http://localhost:5000/api/patients?query=${query}`
       );
+
       if (response.data.success) {
-        setPatients(response.data.data);
+        setPatients(response.data.data || []); // ✅ Ensure `data` exists, fallback to empty array
       } else {
-        setError(response.data.message);
+        setError(response.data.message || "Unknown error occurred"); // ✅ Use default message if missing
         setPatients([]);
       }
     } catch (err) {

@@ -150,7 +150,7 @@ const StaffPage = () => {
     <Flex
       align="center"
       justify="center"
-      bg="gray.50"
+      bg="blue.50"
       minHeight="100vh"
       width="100vw"
       overflow="hidden"
