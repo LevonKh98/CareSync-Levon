@@ -40,10 +40,15 @@ const StaffPage = () => {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [patientNames, setPatientNames] = useState<{ [key: number]: string }>(
     {}
   );
+
+  const {
+    isOpen: isLookupOpen,
+    onOpen: openLookup,
+    onClose: closeLookup,
+  } = useDisclosure();
 
   const handleShowPatientInfo = async (patientId: number) => {
     const result = await getPatient(patientId);
@@ -222,11 +227,11 @@ const StaffPage = () => {
               Look Up Patient
             </Heading>
             <Text color="gray.600">Find patient information quickly.</Text>
-            <Button mt={4} colorScheme="teal" size="sm" onClick={onOpen}>
+            <Button mt={4} colorScheme="teal" size="sm" onClick={openLookup}>
               Look Up
             </Button>
           </Box>
-
+          <PatientLookup isOpen={isLookupOpen} onClose={closeLookup} />
           {/* Manage Appointments Widget */}
           <Box
             bg="gray.100"
@@ -359,7 +364,6 @@ const StaffPage = () => {
           </Box>
         </Stack>
       </Box>
-
       {/* Include the Patient Lookup Component */}
     </Flex>
   );
