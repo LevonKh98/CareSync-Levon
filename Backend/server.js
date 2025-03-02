@@ -101,30 +101,7 @@ app.get("/api/todays-appointments", (req, res) => {
 
 
 
-////////////////////////////
-app.get("/api/appointments/details", (req, res) => {
-  const query = `
-    SELECT 
-      a.appointment_id,
-      a.time,
-      a.date,
-      p.name AS patient_name,
-      p.phone_number AS patient_phone,
-      u.username AS doctor_name
-    FROM appointments a
-    JOIN patients p ON a.patient_id = p.patient_id
-    JOIN users u ON a.doctor_id = u.user_id;
-  `;
 
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error("Error fetching appointment details:", err);
-      return res.status(500).json({ success: false, message: "Database error" });
-    }
-    res.json({ success: true, data: results });
-  });
-});
-////////////////////////////
 
 // -----------------------------------------------------------------------------------
 // Email functionality
