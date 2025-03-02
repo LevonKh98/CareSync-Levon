@@ -19,6 +19,19 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+// Define interfaces for better TypeScript support
+interface Appointment {
+  appointment_id: number;
+}
+
+interface AppointmentDetails {
+  appointment_id: number;
+  time: string;
+  doctor_id: number;
+  patient_name: string;
+  patient_phone: string;
+}
+
 // Import Patient Lookup Component
 
 const StaffPage = () => {
