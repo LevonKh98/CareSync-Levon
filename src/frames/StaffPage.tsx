@@ -19,7 +19,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 //import PatientLookup from "../components/PatientLookup.jsx";
-//import { format } from "date-fns";
+import { format } from "date-fns";
 
 // Define interfaces for better TypeScript support
 interface Appointment {
