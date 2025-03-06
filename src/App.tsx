@@ -7,6 +7,7 @@ import AdminPage from "./frames/AdminPage";
 import Help from "./frames/Help";
 import FAQ from "./frames/FAQ";
 import Appointments from "./frames/Appointments";
+import ManageAppointments from "./components/ManageAppointments";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/appointments" element={<Appointments />} />
         <Route path="/help" element={<Help />} />
         <Route path="/faq" element={<FAQ />} />
+        <Route path="/manage-appointments" element={<ManageAppointments />} />
       </Routes>
     </Router>
   );

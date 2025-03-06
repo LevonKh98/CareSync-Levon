@@ -100,8 +100,35 @@ app.get("/api/todays-appointments", (req, res) => {
 });
 
 
+/////////////////////////////
+app.get("/api/appointments", (req, res) => {
+  const query = `
+    SELECT 
+      a.appointment_id, 
+      p.name AS patient_name, 
+      p.dob, 
+      p.phone_number, 
+      p.email, 
+      u.username AS doctor_name,  -- ✅ Fix: Changed from 'u.name' to 'u.username'
+      a.date, 
+      a.time, 
+      a.status
+    FROM appointments a
+    JOIN patients p ON a.patient_id = p.patient_id
+    JOIN users u ON a.doctor_id = u.user_id
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("❌ Database Query Error:", err.sqlMessage);
+      return res.status(500).json({ success: false, message: err.sqlMessage });
+    }
+    res.json({ success: true, data: results });
+  });
+});
 
 
+/////////////////////////////////////
 
 // -----------------------------------------------------------------------------------
 // Email functionality
