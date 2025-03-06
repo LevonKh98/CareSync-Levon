@@ -56,7 +56,9 @@ const StaffLogin = () => {
   const handleAdmin = () => {
     navigate("/adminLogin");
   };
-
+  const handleForgot = () => {
+    navigate("/forgotpassword");
+  };
   const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter") {
       handleLogin();
@@ -192,8 +194,9 @@ const StaffLogin = () => {
           )}
 
           {/* Forgot Password Button */}
-          <Button marginY="25px" colorScheme="black" size="md" width="100%">
-            Forgot Password ?
+          <Button marginY="25px" colorScheme="blue" size="md" width="100%" onClick={handleForgot}>
+            
+            Forgot Password?
           </Button>
         </Box>
       </Box>

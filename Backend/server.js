@@ -11,6 +11,9 @@ require("dotenv").config();
 console.log("Email User:", process.env.EMAIL_USER);
 console.log("Email Pass:", process.env.EMAIL_PASS ? "Loaded" : "Missing");
 
+const resetTokens = new Map(); // Temp storage for reset token
+
+
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -154,7 +157,170 @@ app.get("/api/getPatient/:id", (req, res) => {
 
 // -----------------------------------------------------------------------------------
 
-const PORT = 5000; // Ensure this is the correct port for your backend
+// =============================
+// 🔹 Forgot Password API
+// =============================
+
+const crypto = require("crypto");
+
+app.post("/api/forgot-password", async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ success: false, message: "Email is required" });
+  }
+
+  // Check if email exists
+  const query = "SELECT user_id FROM users WHERE email = ?";
+  db.query(query, [email], async (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ success: false, message: "Email not found" });
+    }
+
+    const userId = results[0].user_id;
+    const token = crypto.randomBytes(32).toString("hex");
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minute expiration
+
+    // Store token in database
+    const insertQuery = `
+    INSERT INTO password_resets (email, token, expires_at) 
+    VALUES (?, ?, ?) 
+    ON DUPLICATE KEY UPDATE token = ?, expires_at = ?`;
+
+db.query(insertQuery, [email, token, expiresAt, token, expiresAt], async (err) => {
+  if (err) {
+    console.error("Error storing reset token:", err);
+    return res.status(500).json({ success: false, message: "Database error" });
+  }
+
+
+      // Send password reset email
+      const resetLink = `http://localhost:5173/reset-password/${token}`;
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Password Reset Request",
+        text: `Click the link below to reset your password:\n\n${resetLink}\n\nThis link will expire in 15 minutes.`,
+      };
+
+      try {
+        await transporter.sendMail(mailOptions);
+        res.json({ success: true, message: "Password reset link sent to your email." });
+      } catch (error) {
+        console.error("Email sending error:", error);
+        res.status(500).json({ success: false, message: "Failed to send email" });
+      }
+    });
+  });
+});
+
+// -----------------------------------------------------------------------------------
+
+
+// =============================
+// 🔹 Reset Password API
+// =============================
+
+app.post("/api/reset-password", async (req, res) => {
+  try {
+      console.log("Received reset request:", req.body);
+
+      const { token, newPassword } = req.body;
+      if (!token || !newPassword) {
+          return res.status(400).json({ success: false, message: "Token and new password are required" });
+      }
+
+      // Check if token exists in the database
+      const query = "SELECT email FROM password_resets WHERE token = ?";
+      db.query(query, [token], async (err, results) => {
+          if (err) {
+              console.error("Database error:", err);
+              return res.status(500).json({ success: false, message: "Database error" });
+          }
+
+          if (results.length === 0) {
+              return res.status(400).json({ success: false, message: "Invalid or expired token" });
+          }
+
+          const email = results[0].email;
+
+          // Hash new password before updating the users table
+          const bcrypt = require("bcrypt");
+          const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+          // Update password in users table
+          const updateQuery = "UPDATE users SET password = ? WHERE email = ?";
+          db.query(updateQuery, [hashedPassword, email], async (err) => {
+              if (err) {
+                  console.error("Error updating password:", err);
+                  return res.status(500).json({ success: false, message: "Database update error" });
+              }
+
+              // Delete token
+              db.query("DELETE FROM password_resets WHERE token = ?", [token]);
+
+              return res.json({ success: true, message: "Password has been reset successfully." });
+          });
+      });
+  } catch (error) {
+      console.error("Server error:", error);
+      res.status(500).json({ success: false, message: "An error occurred. Try again later." });
+  }
+});
+
+
+// -----------------------------------------------------------------------------------
+
+// =============================
+// 🔹 Add User API
+// =============================
+
+app.post("/api/add-user", async (req, res) => {
+  const { username, password, role, phone, email } = req.body;
+
+  if (!username || !password || !role || !phone || !email) {
+    return res.status(400).json({ success: false, message: "All fields are required." });
+  }
+
+  try {
+    // Hash password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insert user into MySQL database
+    const query = "INSERT INTO users (username, password, role, phone, email) VALUES (?, ?, ?, ?, ?)";
+    db.query(query, [username, hashedPassword, role, phone, email], (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ success: false, message: "Database error." });
+      }
+
+      res.json({ success: true, message: "User added successfully!", userId: result.insertId });
+    });
+  } catch (error) {
+    console.error("Error hashing password:", error);
+    res.status(500).json({ success: false, message: "Server error." });
+  }
+});
+
+// -----------------------------------------------------------------------------------
+
+
+const PORT = 5000; // Backend port
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

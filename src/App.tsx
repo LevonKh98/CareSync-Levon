@@ -7,6 +7,9 @@ import AdminPage from "./frames/AdminPage";
 import Help from "./frames/Help";
 import FAQ from "./frames/FAQ";
 import Appointments from "./frames/Appointments";
+import ForgotPage from "./frames/ForgotPage";
+import ResetPasswordPage from "./frames/ResetPass";
+import AddUser from "./frames/AddUser";
 
 function App() {
   return (
@@ -21,6 +24,9 @@ function App() {
         <Route path="/appointments" element={<Appointments />} />
         <Route path="/help" element={<Help />} />
         <Route path="/faq" element={<FAQ />} />
+        <Route path="/forgotpassword" element={<ForgotPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        <Route path="/add-user" element={<AddUser />} />
       </Routes>
     </Router>
   );
