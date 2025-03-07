@@ -18,7 +18,6 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import PatientLookup from "../components/PatientLookup.jsx";
 import { format } from "date-fns";
 
 // Import Patient Lookup Component
@@ -231,7 +230,6 @@ const StaffPage = () => {
               Look Up
             </Button>
           </Box>
-          <PatientLookup isOpen={isLookupOpen} onClose={closeLookup} />
           {/* Manage Appointments Widget */}
           <Box
             bg="gray.100"
