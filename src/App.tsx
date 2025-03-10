@@ -10,6 +10,7 @@ import Appointments from "./frames/Appointments";
 import ForgotPage from "./frames/ForgotPage";
 import ResetPasswordPage from "./frames/ResetPass";
 import AddUser from "./frames/AddUser";
+import ManageAppointments from "./components/ManageAppointments";
 
 function App() {
   return (
@@ -21,12 +22,12 @@ function App() {
         <Route path="/staff" element={<StaffPage />} />
         <Route path="/adminLogin" element={<AdminLogin />} />
         <Route path="/adminPage" element={<AdminPage />} />
-        <Route path="/appointments" element={<Appointments />} />
         <Route path="/help" element={<Help />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/forgotpassword" element={<ForgotPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="/add-user" element={<AddUser />} />
+        <Route path="/manage-appointments" element={<ManageAppointments />} />
       </Routes>
     </Router>
   );
