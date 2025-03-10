@@ -6,7 +6,6 @@ import AdminLogin from "./frames/AdminLogin";
 import AdminPage from "./frames/AdminPage";
 import Help from "./frames/Help";
 import FAQ from "./frames/FAQ";
-import Appointments from "./frames/Appointments";
 import ForgotPage from "./frames/ForgotPage";
 import ResetPasswordPage from "./frames/ResetPass";
 import AddUser from "./frames/AddUser";
