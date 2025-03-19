@@ -54,6 +54,32 @@ const ManageAppointments = () => {
     ? appointments.filter((appt) => appt.date.startsWith(selectedDate))
     : appointments;
 
+  const handleDelete = async (appointmentId) => {
+    try {
+      const confirmDelete = window.confirm(
+        "Are you sure you want to delete this appointment?"
+      );
+      if (!confirmDelete) return;
+
+      // Send DELETE request to the backend
+      const response = await axios.delete(
+        `http://localhost:5000/api/appointments/${appointmentId}`
+      );
+
+      if (response.data.success) {
+        // Remove the deleted appointment from state
+        setAppointments(
+          appointments.filter((appt) => appt.appointment_id !== appointmentId)
+        );
+      } else {
+        alert("Failed to delete appointment: " + response.data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+      alert("Error deleting appointment. Check the console for details.");
+    }
+  };
+
   return (
     <Box minHeight="100vh" bg="teal.700" p={6} color="white" width="100vw">
       <Flex justifyContent="center">
@@ -146,6 +172,7 @@ const ManageAppointments = () => {
                           borderRadius="full"
                           px={4}
                           mr={2}
+                          marginBottom={2}
                         >
                           Edit
                         </Button>
@@ -154,6 +181,7 @@ const ManageAppointments = () => {
                           size="sm"
                           borderRadius="full"
                           px={4}
+                          onClick={() => handleDelete(appt.appointment_id)}
                         >
                           Delete
                         </Button>

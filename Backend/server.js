@@ -133,6 +133,25 @@ app.get("/api/appointments", (req, res) => {
 
 /////////////////////////////////////
 
+// DELETE API Endpoint
+app.delete("/api/appointments/:id", (req, res) => {
+  const appointmentId = req.params.id;
+
+  const query = "DELETE FROM appointments WHERE appointment_id = ?";
+  db.query(query, [appointmentId], (err, result) => {
+    if (err) {
+      console.error("Error deleting appointment:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: "Appointment not found" });
+    }
+
+    res.json({ success: true, message: "Appointment deleted successfully" });
+  });
+});
+
 // -----------------------------------------------------------------------------------
 // Email functionality
 app.post("/api/send-email", async (req, res) => {
