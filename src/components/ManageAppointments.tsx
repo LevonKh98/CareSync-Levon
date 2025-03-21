@@ -31,7 +31,7 @@ const ManageAppointments = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
-  const [doctors, setDoctors] = useState([]); // Store list of doctors
+  const [doctors, setDoctors] = useState([]);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [editingAppointment, setEditingAppointment] = useState(null);
@@ -41,7 +41,7 @@ const ManageAppointments = () => {
 
   useEffect(() => {
     fetchAppointments();
-    fetchDoctors(); // Load doctors list
+    fetchDoctors();
   }, []);
 
   const fetchAppointments = async () => {
@@ -75,7 +75,7 @@ const ManageAppointments = () => {
   const handleEditClick = (appt) => {
     setEditingAppointment(appt);
     setUpdatedDoctor(appt.doctor_id);
-    setUpdatedDate(appt.date.split("T")[0]); // Convert full datetime to YYYY-MM-DD
+    setUpdatedDate(appt.date.split("T")[0]); // Format to YYYY-MM-DD
     setUpdatedTime(appt.time);
     onOpen();
   };
@@ -94,9 +94,9 @@ const ManageAppointments = () => {
       if (response.data.success) {
         alert("Appointment updated successfully!");
         onClose();
-        fetchAppointments(); // Refresh the list
+        fetchAppointments();
       } else {
-        alert(response.data.message); // Show doctor unavailable message
+        alert(response.data.message);
       }
     } catch (error) {
       console.error("Error updating appointment:", error);
@@ -128,6 +128,11 @@ const ManageAppointments = () => {
     }
   };
 
+  // ✅ Fix for Filtering Appointments by Date
+  const filteredAppointments = selectedDate
+    ? appointments.filter((appt) => appt.date.split("T")[0] === selectedDate)
+    : appointments;
+
   return (
     <Box minHeight="100vh" bg="teal.700" p={6} color="white" width="100vw">
       <Flex justifyContent="center">
@@ -143,7 +148,7 @@ const ManageAppointments = () => {
             Manage Appointments
           </Heading>
 
-          {/* Add New Appointment & Date Filter */}
+          {/* ✅ Add New Appointment & Date Filter */}
           <Flex mb={6} align="center">
             <Button
               colorScheme="green"
@@ -178,7 +183,7 @@ const ManageAppointments = () => {
             </Flex>
           </Flex>
 
-          {/* Loading & Error Handling */}
+          {/* ✅ Table for Displaying Appointments */}
           {loading ? (
             <Spinner size="lg" />
           ) : error ? (
@@ -199,7 +204,7 @@ const ManageAppointments = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {appointments.map((appt, index) => (
+                {filteredAppointments.map((appt, index) => (
                   <Tr
                     key={index}
                     bg={index % 2 === 0 ? "gray.100" : "gray.200"}
@@ -239,7 +244,7 @@ const ManageAppointments = () => {
         </Box>
       </Flex>
 
-      {/* Edit Appointment Modal */}
+      {/* ✅ Edit Appointment Modal */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -260,7 +265,7 @@ const ManageAppointments = () => {
             <Input
               type="date"
               value={updatedDate}
-              min={new Date().toISOString().split("T")[0]} // Prevent past dates
+              min={new Date().toISOString().split("T")[0]}
               onChange={(e) => setUpdatedDate(e.target.value)}
               mt={4}
             />
