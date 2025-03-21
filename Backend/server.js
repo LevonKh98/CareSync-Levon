@@ -152,6 +152,76 @@ app.delete("/api/appointments/:id", (req, res) => {
   });
 });
 
+
+//Edit appointment
+
+app.put("/api/appointments/:id", (req, res) => {
+  console.log("PUT /api/appointments/:id route was called");  // Debugging log
+  console.log("Params:", req.params);
+  console.log("Body:", req.body);
+
+  const appointmentId = req.params.id;
+  const { doctor_id, date, time } = req.body;
+
+  if (!doctor_id || !date || !time) {
+    return res.status(400).json({ success: false, message: "All fields are required" });
+  }
+  
+  // Check if doctor is already booked
+  const checkQuery = `
+    SELECT appointment_id FROM appointments 
+    WHERE doctor_id = ? AND date = ? AND time = ? AND appointment_id != ?
+  `;
+
+  db.query(checkQuery, [doctor_id, date, time, appointmentId], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
+    }
+
+    if (results.length > 0) {
+      return res.status(400).json({ success: false, message: "Doctor is already booked at this time" });
+    }
+
+    // Update the appointment
+    const updateQuery = `
+      UPDATE appointments 
+      SET doctor_id = ?, date = ?, time = ? 
+      WHERE appointment_id = ?
+    `;
+
+    db.query(updateQuery, [doctor_id, date, time, appointmentId], (err, result) => {
+      if (err) {
+        console.error("Error updating appointment:", err);
+        return res.status(500).json({ success: false, message: "Database error" });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ success: false, message: "Appointment not found" });
+      }
+
+      res.json({ success: true, message: "Appointment updated successfully" });
+    });
+  });
+});
+
+app.get("/api/doctors", (req, res) => {
+  const query = "SELECT user_id, username FROM users WHERE role = 'doctor'";
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching doctors:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
+    }
+
+    res.json({ success: true, data: results });
+  });
+});
+
+
+
+
+/////////////////
 // -----------------------------------------------------------------------------------
 // Email functionality
 app.post("/api/send-email", async (req, res) => {

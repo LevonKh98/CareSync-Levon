@@ -14,6 +14,15 @@ import {
   Text,
   Flex,
   Spacer,
+  Select,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
 
@@ -22,37 +31,78 @@ const ManageAppointments = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
+  const [doctors, setDoctors] = useState([]); // Store list of doctors
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [editingAppointment, setEditingAppointment] = useState(null);
+  const [updatedDoctor, setUpdatedDoctor] = useState("");
+  const [updatedDate, setUpdatedDate] = useState("");
+  const [updatedTime, setUpdatedTime] = useState("");
 
   useEffect(() => {
     fetchAppointments();
+    fetchDoctors(); // Load doctors list
   }, []);
 
   const fetchAppointments = async () => {
     try {
-      console.log("Fetching appointments...");
       const response = await axios.get(
         "http://localhost:5000/api/appointments"
       );
-      console.log("API Response:", response.data);
-
       if (response.data.success) {
         setAppointments(response.data.data);
       } else {
         setError("Failed to load appointments: " + response.data.message);
       }
     } catch (err) {
-      console.error("Error fetching appointments:", err);
-      setError("Failed to load appointments. Check the console for details.");
+      setError("Failed to load appointments.");
     } finally {
       setLoading(false);
     }
   };
 
-  const formatDate = (dateString) => dateString.split("T")[0];
+  const fetchDoctors = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/doctors");
+      if (response.data.success) {
+        setDoctors(response.data.data);
+      }
+    } catch (err) {
+      console.error("Error fetching doctors:", err);
+    }
+  };
 
-  const filteredAppointments = selectedDate
-    ? appointments.filter((appt) => appt.date.startsWith(selectedDate))
-    : appointments;
+  const handleEditClick = (appt) => {
+    setEditingAppointment(appt);
+    setUpdatedDoctor(appt.doctor_id);
+    setUpdatedDate(appt.date.split("T")[0]); // Convert full datetime to YYYY-MM-DD
+    setUpdatedTime(appt.time);
+    onOpen();
+  };
+
+  const handleUpdateAppointment = async () => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/appointments/${editingAppointment.appointment_id}`,
+        {
+          doctor_id: updatedDoctor,
+          date: updatedDate,
+          time: updatedTime,
+        }
+      );
+
+      if (response.data.success) {
+        alert("Appointment updated successfully!");
+        onClose();
+        fetchAppointments(); // Refresh the list
+      } else {
+        alert(response.data.message); // Show doctor unavailable message
+      }
+    } catch (error) {
+      console.error("Error updating appointment:", error);
+      alert("Failed to update appointment.");
+    }
+  };
 
   const handleDelete = async (appointmentId) => {
     try {
@@ -61,13 +111,11 @@ const ManageAppointments = () => {
       );
       if (!confirmDelete) return;
 
-      // Send DELETE request to the backend
       const response = await axios.delete(
         `http://localhost:5000/api/appointments/${appointmentId}`
       );
 
       if (response.data.success) {
-        // Remove the deleted appointment from state
         setAppointments(
           appointments.filter((appt) => appt.appointment_id !== appointmentId)
         );
@@ -76,7 +124,7 @@ const ManageAppointments = () => {
       }
     } catch (error) {
       console.error("Error deleting appointment:", error);
-      alert("Error deleting appointment. Check the console for details.");
+      alert("Error deleting appointment.");
     }
   };
 
@@ -151,55 +199,86 @@ const ManageAppointments = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {filteredAppointments.length > 0 ? (
-                  filteredAppointments.map((appt, index) => (
-                    <Tr
-                      key={index}
-                      bg={index % 2 === 0 ? "gray.100" : "gray.200"}
-                    >
-                      <Td color="gray.800">{appt.patient_name}</Td>
-                      <Td color="gray.800">{formatDate(appt.dob)}</Td>
-                      <Td color="gray.800">{appt.phone_number}</Td>
-                      <Td color="gray.800">{appt.email}</Td>
-                      <Td color="gray.800">{appt.doctor_name}</Td>
-                      <Td color="gray.800">{formatDate(appt.date)}</Td>
-                      <Td color="gray.800">{appt.time}</Td>
-                      <Td color="gray.800">{appt.status}</Td>
-                      <Td>
-                        <Button
-                          colorScheme="blue"
-                          size="sm"
-                          borderRadius="full"
-                          px={4}
-                          mr={2}
-                          marginBottom={2}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          colorScheme="red"
-                          size="sm"
-                          borderRadius="full"
-                          px={4}
-                          onClick={() => handleDelete(appt.appointment_id)}
-                        >
-                          Delete
-                        </Button>
-                      </Td>
-                    </Tr>
-                  ))
-                ) : (
-                  <Tr>
-                    <Td colSpan="9" textAlign="center" color="gray.800">
-                      No appointments found.
+                {appointments.map((appt, index) => (
+                  <Tr
+                    key={index}
+                    bg={index % 2 === 0 ? "gray.100" : "gray.200"}
+                  >
+                    <Td color="gray.800">{appt.patient_name}</Td>
+                    <Td color="gray.800">{appt.dob.split("T")[0]}</Td>
+                    <Td color="gray.800">{appt.phone_number}</Td>
+                    <Td color="gray.800">{appt.email}</Td>
+                    <Td color="gray.800">{appt.doctor_name}</Td>
+                    <Td color="gray.800">{appt.date.split("T")[0]}</Td>
+                    <Td color="gray.800">{appt.time}</Td>
+                    <Td color="gray.800">{appt.status}</Td>
+                    <Td>
+                      <Button
+                        colorScheme="blue"
+                        size="sm"
+                        px={4}
+                        mr={2}
+                        onClick={() => handleEditClick(appt)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        colorScheme="red"
+                        size="sm"
+                        px={4}
+                        onClick={() => handleDelete(appt.appointment_id)}
+                      >
+                        Delete
+                      </Button>
                     </Td>
                   </Tr>
-                )}
+                ))}
               </Tbody>
             </Table>
           )}
         </Box>
       </Flex>
+
+      {/* Edit Appointment Modal */}
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Edit Appointment</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Select
+              value={updatedDoctor}
+              onChange={(e) => setUpdatedDoctor(e.target.value)}
+            >
+              <option value="">Select Doctor</option>
+              {doctors.map((doc) => (
+                <option key={doc.user_id} value={doc.user_id}>
+                  {doc.username}
+                </option>
+              ))}
+            </Select>
+            <Input
+              type="date"
+              value={updatedDate}
+              min={new Date().toISOString().split("T")[0]} // Prevent past dates
+              onChange={(e) => setUpdatedDate(e.target.value)}
+              mt={4}
+            />
+            <Input
+              type="time"
+              value={updatedTime}
+              onChange={(e) => setUpdatedTime(e.target.value)}
+              mt={4}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={handleUpdateAppointment}>
+              Update
+            </Button>
+            <Button onClick={onClose}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };
