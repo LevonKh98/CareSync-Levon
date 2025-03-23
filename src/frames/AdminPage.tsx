@@ -74,16 +74,16 @@ const AdminPage = () => {
             textAlign="center"
           >
             <Heading as="h3" size="md" mb={2} color="gray.700">
-              New Users
+              Add Users
             </Heading>
-            <Text color="gray.600">Add Users.</Text>
+            <Text color="gray.600">Go to add user form.</Text>
             <Button
               mt={4}
               colorScheme="teal"
               size="sm"
-              onClick={() => alert("Add user In PROGRESS")}
+              onClick={() => navigate("/add-user")}
             >
-              Manage
+              Add
             </Button>
           </Box>
 
@@ -103,7 +103,7 @@ const AdminPage = () => {
               mt={4}
               colorScheme="teal"
               size="sm"
-              onClick={() => alert("Remove In PROGRESS")}
+              onClick={() => navigate("/remove-user")}
             >
               Remove
             </Button>
@@ -125,7 +125,7 @@ const AdminPage = () => {
               mt={4}
               colorScheme="teal"
               size="sm"
-              onClick={() => alert("Edit In PROGRESS")}
+              onClick={() => navigate("/edit-user-list")}
             >
               Edit
             </Button>
