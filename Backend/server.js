@@ -129,6 +129,65 @@ app.get("/api/appointments", (req, res) => {
     res.json({ success: true, data: results });
   });
 });
+//Fetching Patient Info
+
+// GET all patients
+app.get("/api/patients", (req, res) => {
+  const query = "SELECT patient_id, name, dob, phone_number, email FROM patients";
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching patients:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
+    }
+
+    res.json({ success: true, data: results });
+  });
+});
+/////////////////////////
+
+// =============================
+// 🔹 Create New Appointment
+// =============================
+app.post("/api/appointments", (req, res) => {
+  const { patient_id, doctor_id, date, time } = req.body;
+
+  if (!patient_id || !doctor_id || !date || !time) {
+    return res.status(400).json({ success: false, message: "All fields are required" });
+  }
+
+  // Check if the doctor already has an appointment at the given date and time
+  const checkQuery = `
+    SELECT appointment_id FROM appointments 
+    WHERE doctor_id = ? AND date = ? AND time = ?
+  `;
+
+  db.query(checkQuery, [doctor_id, date, time], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
+    }
+
+    if (results.length > 0) {
+      return res.status(400).json({ success: false, message: "Doctor is already booked at this time" });
+    }
+
+    // Insert new appointment
+    const insertQuery = `
+      INSERT INTO appointments (patient_id, doctor_id, date, time, status)
+      VALUES (?, ?, ?, ?, 'Scheduled')
+    `;
+
+    db.query(insertQuery, [patient_id, doctor_id, date, time], (err, result) => {
+      if (err) {
+        console.error("Insert error:", err);
+        return res.status(500).json({ success: false, message: "Database error" });
+      }
+
+      return res.json({ success: true, message: "Appointment added successfully", appointment_id: result.insertId });
+    });
+  });
+});
 
 
 /////////////////////////////////////
