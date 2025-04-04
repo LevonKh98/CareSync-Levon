@@ -9,6 +9,9 @@ import FAQ from "./frames/FAQ";
 import ForgotPage from "./frames/ForgotPage";
 import ResetPasswordPage from "./frames/ResetPass";
 import AddUser from "./frames/AddUser";
+import RemoveUser from "./frames/RemoveUser.tsx";
+import EditUser from "./frames/EditUser.tsx";
+import EditUserList from "./frames/EditUserList.tsx";
 import ManageAppointments from "./components/ManageAppointments";
 
 function App() {
@@ -26,6 +29,9 @@ function App() {
         <Route path="/forgotpassword" element={<ForgotPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="/add-user" element={<AddUser />} />
+        <Route path="/remove-user" element={<RemoveUser />} />
+        <Route path="/edit-user-list" element={<EditUserList />} />
+        <Route path="/edit-user/:id" element={<EditUser />} />
         <Route path="/manage-appointments" element={<ManageAppointments />} />
       </Routes>
     </Router>
