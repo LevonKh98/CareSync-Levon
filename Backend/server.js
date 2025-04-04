@@ -129,10 +129,158 @@ app.get("/api/appointments", (req, res) => {
     res.json({ success: true, data: results });
   });
 });
+//Fetching Patient Info
+
+// GET all patients
+app.get("/api/patients", (req, res) => {
+  const query = "SELECT patient_id, name, dob, phone_number, email FROM patients";
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching patients:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
+    }
+
+    res.json({ success: true, data: results });
+  });
+});
+/////////////////////////
+
+// =============================
+// 🔹 Create New Appointment
+// =============================
+app.post("/api/appointments", (req, res) => {
+  const { patient_id, doctor_id, date, time } = req.body;
+
+  if (!patient_id || !doctor_id || !date || !time) {
+    return res.status(400).json({ success: false, message: "All fields are required" });
+  }
+
+  // Check if the doctor already has an appointment at the given date and time
+  const checkQuery = `
+    SELECT appointment_id FROM appointments 
+    WHERE doctor_id = ? AND date = ? AND time = ?
+  `;
+
+  db.query(checkQuery, [doctor_id, date, time], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
+    }
+
+    if (results.length > 0) {
+      return res.status(400).json({ success: false, message: "Doctor is already booked at this time" });
+    }
+
+    // Insert new appointment
+    const insertQuery = `
+      INSERT INTO appointments (patient_id, doctor_id, date, time, status)
+      VALUES (?, ?, ?, ?, 'Scheduled')
+    `;
+
+    db.query(insertQuery, [patient_id, doctor_id, date, time], (err, result) => {
+      if (err) {
+        console.error("Insert error:", err);
+        return res.status(500).json({ success: false, message: "Database error" });
+      }
+
+      return res.json({ success: true, message: "Appointment added successfully", appointment_id: result.insertId });
+    });
+  });
+});
 
 
 /////////////////////////////////////
 
+// DELETE API Endpoint
+app.delete("/api/appointments/:id", (req, res) => {
+  const appointmentId = req.params.id;
+
+  const query = "DELETE FROM appointments WHERE appointment_id = ?";
+  db.query(query, [appointmentId], (err, result) => {
+    if (err) {
+      console.error("Error deleting appointment:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: "Appointment not found" });
+    }
+
+    res.json({ success: true, message: "Appointment deleted successfully" });
+  });
+});
+
+
+//Edit appointment
+
+app.put("/api/appointments/:id", (req, res) => {
+  console.log("PUT /api/appointments/:id route was called");  // Debugging log
+  console.log("Params:", req.params);
+  console.log("Body:", req.body);
+
+  const appointmentId = req.params.id;
+  const { doctor_id, date, time } = req.body;
+
+  if (!doctor_id || !date || !time) {
+    return res.status(400).json({ success: false, message: "All fields are required" });
+  }
+  
+  // Check if doctor is already booked
+  const checkQuery = `
+    SELECT appointment_id FROM appointments 
+    WHERE doctor_id = ? AND date = ? AND time = ? AND appointment_id != ?
+  `;
+
+  db.query(checkQuery, [doctor_id, date, time, appointmentId], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
+    }
+
+    if (results.length > 0) {
+      return res.status(400).json({ success: false, message: "Doctor is already booked at this time" });
+    }
+
+    // Update the appointment
+    const updateQuery = `
+      UPDATE appointments 
+      SET doctor_id = ?, date = ?, time = ? 
+      WHERE appointment_id = ?
+    `;
+
+    db.query(updateQuery, [doctor_id, date, time, appointmentId], (err, result) => {
+      if (err) {
+        console.error("Error updating appointment:", err);
+        return res.status(500).json({ success: false, message: "Database error" });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ success: false, message: "Appointment not found" });
+      }
+
+      res.json({ success: true, message: "Appointment updated successfully" });
+    });
+  });
+});
+
+app.get("/api/doctors", (req, res) => {
+  const query = "SELECT user_id, username FROM users WHERE role = 'doctor'";
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching doctors:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
+    }
+
+    res.json({ success: true, data: results });
+  });
+});
+
+
+
+
+/////////////////
 // -----------------------------------------------------------------------------------
 // Email functionality
 app.post("/api/send-email", async (req, res) => {
