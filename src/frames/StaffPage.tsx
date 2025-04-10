@@ -1,13 +1,112 @@
-import React from "react";
-import { Box, Heading, Text, Button, Flex, Stack } from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Heading,
+  Text,
+  Button,
+  Flex,
+  Stack,
+  Spinner,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+} from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { format } from "date-fns";
+
+// Import Patient Lookup Component
 
 const StaffPage = () => {
   const navigate = useNavigate();
+  const [todaysAppointments, setTodaysAppointments] = useState<Appointment[]>(
+    []
+  );
 
-  //handles logout
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [patientNames, setPatientNames] = useState<{ [key: number]: string }>(
+    {}
+  );
+
+  useEffect(() => {
+    const fetchPatients = async () => {
+      const newPatientNames: { [key: number]: string } = {};
+
+      for (const appt of todaysAppointments) {
+        if (!patientNames[appt.patient_id]) {
+          // Avoid duplicate API calls
+          const result = await getPatient(appt.patient_id);
+          if (result && result.success) {
+            newPatientNames[appt.patient_id] = result.data.name;
+          }
+        }
+      }
+
+      setPatientNames((prev) => ({ ...prev, ...newPatientNames }));
+    };
+
+    if (todaysAppointments.length > 0) {
+      fetchPatients();
+    }
+  }, [todaysAppointments]);
+
+  interface Appointment {
+    patient_id: number;
+  }
+
+  const {
+    isOpen: isAppsOpen,
+    onOpen: openApps,
+    onClose: closeApps,
+  } = useDisclosure();
+
+  const getPatient = async (patientId: number) => {
+    try {
+      const response = await fetch(`/api/getPatient/${patientId}`);
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Error fetching patient");
+      }
+
+      return result; // Return the full result without extracting variables
+    } catch (error) {
+      console.error("Error:", error);
+      return null;
+    }
+  };
+  React.useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const response = await axios.get<{ data: Appointment[] }>(
+          "http://localhost:5000/api/todays-appointments"
+        );
+        setTodaysAppointments(response.data.data); // ✅ No more TypeScript error
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching appointments:", err);
+        setError("Failed to load appointments.");
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
+
+  // Handle logout
   const handleLogout = () => {
-    navigate("/"); // Navigates to the staff login page
+    navigate("/");
+  };
+
+  const handleManageAppointments = () => {
+    navigate("/manage-appointments");
   };
 
   return (
@@ -29,27 +128,9 @@ const StaffPage = () => {
         mx="auto"
         position="relative"
       >
-        {/* Top-Right Buttons */}
+        {/* Logout Button */}
         <Box position="absolute" top={4} right={4} display="flex" gap={4}>
-          <Button
-            colorScheme="teal"
-            size="sm"
-            onClick={() => alert("View Notifications")}
-          >
-            Notifications
-          </Button>
-          <Button
-            colorScheme="teal"
-            size="sm"
-            onClick={() => alert("Open Settings")}
-          >
-            Settings
-          </Button>
-          <Button
-            colorScheme="red"
-            size="sm"
-            onClick={handleLogout} // logout function
-          >
+          <Button colorScheme="red" size="sm" onClick={handleLogout}>
             Logout
           </Button>
         </Box>
@@ -58,8 +139,6 @@ const StaffPage = () => {
         <Heading as="h1" size="xl" mb={4} textAlign="center" color="gray.700">
           Staff Home
         </Heading>
-
-        {/* Welcome Message */}
         <Text textAlign="center" mb={6} color="gray.600" fontSize="lg">
           Welcome, Doctor! Here's an overview of your tasks.
         </Text>
@@ -76,15 +155,22 @@ const StaffPage = () => {
             <Heading as="h3" size="md" mb={2} color="gray.700">
               Today's Appointments
             </Heading>
-            <Text color="gray.600">15 Appointments Scheduled</Text>
-            <Button
-              mt={4}
-              colorScheme="teal"
-              size="sm"
-              onClick={() => alert("View Appointments")}
-            >
-              View Details
-            </Button>
+
+            {/* Show Loading or Error Messages */}
+            {loading ? (
+              <Spinner size="lg" color="teal.500" />
+            ) : error ? (
+              <Text color="red.500">{error}</Text>
+            ) : (
+              <>
+                <Text color="gray.600">
+                  {todaysAppointments.length} Appointments Scheduled
+                </Text>
+                <Button mt={4} colorScheme="teal" size="sm" onClick={openApps}>
+                  View Details
+                </Button>
+              </>
+            )}
           </Box>
 
           {/* Look Up Patient Widget */}
@@ -99,16 +185,10 @@ const StaffPage = () => {
               Look Up Patient
             </Heading>
             <Text color="gray.600">Find patient information quickly.</Text>
-            <Button
-              mt={4}
-              colorScheme="teal"
-              size="sm"
-              onClick={() => alert("Look Up Patient")}
-            >
-              Look Up Patient
+            <Button mt={4} colorScheme="teal" size="sm" onClick={onOpen}>
+              Look Up
             </Button>
           </Box>
-
           {/* Manage Appointments Widget */}
           <Box
             bg="gray.100"
@@ -125,13 +205,42 @@ const StaffPage = () => {
               mt={4}
               colorScheme="teal"
               size="sm"
-              onClick={() => alert("Manage Appointments")}
+              onClick={handleManageAppointments}
             >
               Manage Appointments
             </Button>
           </Box>
         </Stack>
       </Box>
+
+      {/* Include the Patient Lookup Component */}
+
+      <Modal isOpen={isAppsOpen} onClose={closeApps}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Today's Appointments</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {" "}
+            {todaysAppointments.length > 0 ? (
+              <Stack spacing={3}>
+                {todaysAppointments.map((appt, index) => (
+                  <Box key={index} p={3} bg="black.100" borderRadius="md">
+                    <Text>{patientNames[appt.patient_id]}</Text>
+                  </Box>
+                ))}
+              </Stack>
+            ) : (
+              <Text>No appointments scheduled for today.</Text>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="red" onClick={closeApps}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Flex>
   );
 };
