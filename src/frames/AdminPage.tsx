@@ -7,6 +7,7 @@ const AdminPage = () => {
 
   //handles logout
   const handleLogout = () => {
+    localStorage.removeItem("token");
     navigate("/adminLogin"); // Goes to the admin login page
   };
 

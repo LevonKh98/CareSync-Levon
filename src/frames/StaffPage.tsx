@@ -157,6 +157,7 @@ const StaffPage = () => {
 
   // Handle logout
   const handleLogout = () => {
+    localStorage.removeItem("token");
     navigate("/");
   };
 
