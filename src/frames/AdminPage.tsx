@@ -7,6 +7,7 @@ const AdminPage = () => {
 
   //handles logout
   const handleLogout = () => {
+    localStorage.removeItem("token");
     navigate("/adminLogin"); // Goes to the admin login page
   };
 
@@ -31,20 +32,6 @@ const AdminPage = () => {
       >
         {/* Top-Right Buttons */}
         <Box position="absolute" top={4} right={4} display="flex" gap={4}>
-          <Button
-            colorScheme="teal"
-            size="sm"
-            onClick={() => alert("View Notifications")}
-          >
-            Notifications
-          </Button>
-          <Button
-            colorScheme="teal"
-            size="sm"
-            onClick={() => alert("Open Settings")}
-          >
-            Settings
-          </Button>
           <Button
             colorScheme="red"
             size="sm"
