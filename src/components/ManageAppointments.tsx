@@ -91,6 +91,21 @@ const ManageAppointments = () => {
       console.error("Error fetching patients:", err);
     }
   };
+  // --- Utility Functions ---
+
+  // Check if selected date is Monday-Friday
+  const isWeekday = (dateStr) => {
+    const date = new Date(dateStr);
+    const day = date.getDay(); // Sunday=0, Monday=1, ..., Saturday=6
+    return day >= 1 && day <= 5;
+  };
+
+  // Check if selected time is between 08:00 and 17:00
+  const isWithinWorkingHours = (timeStr) => {
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    const totalMinutes = hours * 60 + minutes;
+    return totalMinutes >= 480 && totalMinutes <= 1020; // 480 = 8*60, 1020 = 17*60
+  };
 
   const handleEditClick = (appt) => {
     setEditingAppointment(appt);
@@ -102,6 +117,14 @@ const ManageAppointments = () => {
 
   const handleUpdateAppointment = async () => {
     try {
+      if (!isWeekday(updatedDate)) {
+        return alert("Appointments must be scheduled Monday to Friday.");
+      }
+
+      if (!isWithinWorkingHours(updatedTime)) {
+        return alert("Appointments must be between 8:00 AM and 5:00 PM.");
+      }
+
       const res = await axios.put(
         `http://localhost:5000/api/appointments/${editingAppointment.appointment_id}`,
         { doctor_id: updatedDoctor, date: updatedDate, time: updatedTime }
@@ -111,10 +134,17 @@ const ManageAppointments = () => {
         alert("Appointment updated successfully!");
         onEditClose();
         fetchAppointments();
-      } else alert(res.data.message);
+      } else {
+        alert(res.data.message); // Show real backend error message
+      }
     } catch (err) {
       console.error("Error updating appointment:", err);
-      alert("Failed to update appointment.");
+
+      if (err.response && err.response.data && err.response.data.message) {
+        alert(err.response.data.message); // Show backend error
+      } else {
+        alert("Failed to update appointment."); // fallback error
+      }
     }
   };
 
@@ -138,6 +168,14 @@ const ManageAppointments = () => {
 
   const handleAddAppointment = async () => {
     try {
+      if (!isWeekday(updatedDate)) {
+        return alert("Appointments must be scheduled Monday to Friday.");
+      }
+
+      if (!isWithinWorkingHours(updatedTime)) {
+        return alert("Appointments must be between 8:00 AM and 5:00 PM.");
+      }
+
       if (!selectedPatient || !updatedDoctor || !updatedDate || !updatedTime) {
         return alert("All fields are required.");
       }
@@ -153,10 +191,17 @@ const ManageAppointments = () => {
         alert("Appointment added successfully!");
         onAddClose();
         fetchAppointments();
-      } else alert(res.data.message);
+      } else {
+        alert(res.data.message); //  If backend responds failure, show real reason
+      }
     } catch (err) {
       console.error("Error adding appointment:", err);
-      alert("Failed to add appointment.");
+
+      if (err.response && err.response.data && err.response.data.message) {
+        alert(err.response.data.message); //  Show server message if available
+      } else {
+        alert("Failed to add appointment."); // fallback generic error
+      }
     }
   };
 

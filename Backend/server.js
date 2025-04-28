@@ -156,6 +156,30 @@ app.post("/api/appointments", (req, res) => {
     return res.status(400).json({ success: false, message: "All fields are required" });
   }
 
+  // --- Utility functions ---
+  function isWeekday(dateStr) {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const localDate = new Date(year, month - 1, day); // Month is 0-indexed
+    const dayOfWeek = localDate.getDay();
+    return dayOfWeek !== 0 && dayOfWeek !== 6;
+  }
+  
+
+  function isWithinWorkingHours(timeStr) {
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    const totalMinutes = hours * 60 + minutes;
+    return totalMinutes >= 480 && totalMinutes <= 1020;
+  }
+
+  // --- Validation ---
+  if (!isWeekday(date)) {
+    return res.status(400).json({ success: false, message: "Appointments must be scheduled Monday to Friday." });
+  }
+
+  if (!isWithinWorkingHours(time)) {
+    return res.status(400).json({ success: false, message: "Appointments must be between 8:00 AM and 5:00 PM." });
+  }
+
   // Check if the doctor already has an appointment at the given date and time
   const checkQuery = `
     SELECT appointment_id FROM appointments 
@@ -226,6 +250,29 @@ app.put("/api/appointments/:id", (req, res) => {
     return res.status(400).json({ success: false, message: "All fields are required" });
   }
   
+   // --- Utility functions ---
+   function isWeekday(dateStr) {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const localDate = new Date(year, month - 1, day); // Month is 0-indexed
+    const dayOfWeek = localDate.getDay();
+    return dayOfWeek !== 0 && dayOfWeek !== 6;
+  }
+  
+
+  function isWithinWorkingHours(timeStr) {
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    const totalMinutes = hours * 60 + minutes;
+    return totalMinutes >= 480 && totalMinutes <= 1020;
+  }
+
+  // --- Validation ---
+  if (!isWeekday(date)) {
+    return res.status(400).json({ success: false, message: "Appointments must be scheduled Monday to Friday." });
+  }
+
+  if (!isWithinWorkingHours(time)) {
+    return res.status(400).json({ success: false, message: "Appointments must be between 8:00 AM and 5:00 PM." });
+  }
   // Check if doctor is already booked
   const checkQuery = `
     SELECT appointment_id FROM appointments 
