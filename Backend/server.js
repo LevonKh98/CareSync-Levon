@@ -153,17 +153,15 @@ app.post("/api/appointments", (req, res) => {
   const { patient_id, doctor_id, date, time } = req.body;
 
   if (!patient_id || !doctor_id || !date || !time) {
-    return res.status(400).json({ success: false, message: "All fields are required" });
+    return res.status(400).json({ success: false, message: "All fields are required." });
   }
 
-  // --- Utility functions ---
   function isWeekday(dateStr) {
     const [year, month, day] = dateStr.split("-").map(Number);
-    const localDate = new Date(year, month - 1, day); // Month is 0-indexed
+    const localDate = new Date(year, month - 1, day);
     const dayOfWeek = localDate.getDay();
     return dayOfWeek !== 0 && dayOfWeek !== 6;
   }
-  
 
   function isWithinWorkingHours(timeStr) {
     const [hours, minutes] = timeStr.split(":").map(Number);
@@ -171,7 +169,6 @@ app.post("/api/appointments", (req, res) => {
     return totalMinutes >= 480 && totalMinutes <= 1020;
   }
 
-  // --- Validation ---
   if (!isWeekday(date)) {
     return res.status(400).json({ success: false, message: "Appointments must be scheduled Monday to Friday." });
   }
@@ -180,23 +177,25 @@ app.post("/api/appointments", (req, res) => {
     return res.status(400).json({ success: false, message: "Appointments must be between 8:00 AM and 5:00 PM." });
   }
 
-  // Check if the doctor already has an appointment at the given date and time
   const checkQuery = `
     SELECT appointment_id FROM appointments 
-    WHERE doctor_id = ? AND date = ? AND time = ?
+    WHERE doctor_id = ? 
+      AND date = ? 
+      AND (
+        TIME_TO_SEC(time) BETWEEN TIME_TO_SEC(?) - 1800 AND TIME_TO_SEC(?) + 1800
+      )
   `;
 
-  db.query(checkQuery, [doctor_id, date, time], (err, results) => {
+  db.query(checkQuery, [doctor_id, date, time, time], (err, results) => {
     if (err) {
       console.error("Database error:", err);
-      return res.status(500).json({ success: false, message: "Database error" });
+      return res.status(500).json({ success: false, message: "An unexpected error occurred while making an appointment." });
     }
 
     if (results.length > 0) {
-      return res.status(400).json({ success: false, message: "Doctor is already booked at this time" });
+      return res.status(400).json({ success: false, message: "Doctor already has another appointment around this time." });
     }
 
-    // Insert new appointment
     const insertQuery = `
       INSERT INTO appointments (patient_id, doctor_id, date, time, status)
       VALUES (?, ?, ?, ?, 'Scheduled')
@@ -205,13 +204,15 @@ app.post("/api/appointments", (req, res) => {
     db.query(insertQuery, [patient_id, doctor_id, date, time], (err, result) => {
       if (err) {
         console.error("Insert error:", err);
-        return res.status(500).json({ success: false, message: "Database error" });
+        return res.status(500).json({ success: false, message: "An unexpected error occurred while making an appointment." });
       }
 
-      return res.json({ success: true, message: "Appointment added successfully", appointment_id: result.insertId });
+      return res.json({ success: true, message: "Appointment added successfully.", appointment_id: result.insertId });
     });
   });
 });
+
+
 
 
 /////////////////////////////////////
@@ -239,25 +240,20 @@ app.delete("/api/appointments/:id", (req, res) => {
 //Edit appointment
 
 app.put("/api/appointments/:id", (req, res) => {
-  console.log("PUT /api/appointments/:id route was called");  // Debugging log
-  console.log("Params:", req.params);
-  console.log("Body:", req.body);
-
+  console.log("PUT /api/appointments/:id route was called");
   const appointmentId = req.params.id;
   const { doctor_id, date, time } = req.body;
 
   if (!doctor_id || !date || !time) {
-    return res.status(400).json({ success: false, message: "All fields are required" });
+    return res.status(400).json({ success: false, message: "All fields are required." });
   }
-  
-   // --- Utility functions ---
-   function isWeekday(dateStr) {
+
+  function isWeekday(dateStr) {
     const [year, month, day] = dateStr.split("-").map(Number);
-    const localDate = new Date(year, month - 1, day); // Month is 0-indexed
+    const localDate = new Date(year, month - 1, day);
     const dayOfWeek = localDate.getDay();
     return dayOfWeek !== 0 && dayOfWeek !== 6;
   }
-  
 
   function isWithinWorkingHours(timeStr) {
     const [hours, minutes] = timeStr.split(":").map(Number);
@@ -265,7 +261,6 @@ app.put("/api/appointments/:id", (req, res) => {
     return totalMinutes >= 480 && totalMinutes <= 1020;
   }
 
-  // --- Validation ---
   if (!isWeekday(date)) {
     return res.status(400).json({ success: false, message: "Appointments must be scheduled Monday to Friday." });
   }
@@ -273,23 +268,27 @@ app.put("/api/appointments/:id", (req, res) => {
   if (!isWithinWorkingHours(time)) {
     return res.status(400).json({ success: false, message: "Appointments must be between 8:00 AM and 5:00 PM." });
   }
-  // Check if doctor is already booked
+
   const checkQuery = `
     SELECT appointment_id FROM appointments 
-    WHERE doctor_id = ? AND date = ? AND time = ? AND appointment_id != ?
+    WHERE doctor_id = ? 
+      AND date = ? 
+      AND appointment_id != ? 
+      AND (
+        TIME_TO_SEC(time) BETWEEN TIME_TO_SEC(?) - 1800 AND TIME_TO_SEC(?) + 1800
+      )
   `;
 
-  db.query(checkQuery, [doctor_id, date, time, appointmentId], (err, results) => {
+  db.query(checkQuery, [doctor_id, date, appointmentId, time, time], (err, results) => {
     if (err) {
       console.error("Database error:", err);
-      return res.status(500).json({ success: false, message: "Database error" });
+      return res.status(500).json({ success: false, message: "Failed to update appointment." });
     }
 
     if (results.length > 0) {
-      return res.status(400).json({ success: false, message: "Doctor is already booked at this time" });
+      return res.status(400).json({ success: false, message: "Doctor already has another appointment around this time." });
     }
 
-    // Update the appointment
     const updateQuery = `
       UPDATE appointments 
       SET doctor_id = ?, date = ?, time = ? 
@@ -298,18 +297,20 @@ app.put("/api/appointments/:id", (req, res) => {
 
     db.query(updateQuery, [doctor_id, date, time, appointmentId], (err, result) => {
       if (err) {
-        console.error("Error updating appointment:", err);
-        return res.status(500).json({ success: false, message: "Database error" });
+        console.error("Update error:", err);
+        return res.status(500).json({ success: false, message: "Failed to update appointment." });
       }
 
       if (result.affectedRows === 0) {
-        return res.status(404).json({ success: false, message: "Appointment not found" });
+        return res.status(404).json({ success: false, message: "Appointment not found." });
       }
 
-      res.json({ success: true, message: "Appointment updated successfully" });
+      res.json({ success: true, message: "Appointment updated successfully." });
     });
   });
 });
+
+
 
 app.get("/api/doctors", (req, res) => {
   const query = "SELECT user_id, username FROM users WHERE role = 'doctor'";
