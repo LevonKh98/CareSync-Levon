@@ -1,71 +1,75 @@
 import React from "react";
-import { Box, Heading, Text, Button, Flex, Stack } from "@chakra-ui/react";
+import {
+  Box,
+  Heading,
+  Text,
+  Button,
+  Flex,
+  SimpleGrid,
+  Icon,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
 
 const AdminPage = () => {
   const navigate = useNavigate();
+  const cardBg = useColorModeValue("gray.100", "gray.700");
 
-  //handles logout
   const handleLogout = () => {
-    navigate("/adminLogin"); // Goes to the admin login page
+    navigate("/adminLogin");
   };
 
   return (
     <Flex
       align="center"
       justify="center"
-      bg="gray.50"
+      bg="teal.600"
       minHeight="100vh"
       width="100vw"
       overflow="hidden"
+      px={4}
     >
       <Box
         bg="white"
-        p={{ base: 6, md: 12 }}
-        borderRadius="md"
-        shadow="lg"
+        p={{ base: 6, md: 10 }}
+        borderRadius="lg"
+        shadow="xl"
         width="100%"
-        maxWidth="800px"
-        mx="auto"
+        maxWidth="1000px"
         position="relative"
       >
-        {/* Top-Right Buttons */}
-        <Box position="absolute" top={4} right={4} display="flex" gap={4}>
-
-          <Button
-            colorScheme="red"
-            size="sm"
-            onClick={handleLogout} // logout function
-          >
+        {/* Logout Button */}
+        <Box position="absolute" top={4} right={4}>
+          <Button colorScheme="red" size="sm" onClick={handleLogout}>
             Logout
           </Button>
         </Box>
 
-        {/* Admin Staff Home Heading */}
-        <Heading as="h1" size="xl" mb={4} textAlign="center" color="gray.700">
-          Admin Home
+        <Heading as="h1" size="xl" textAlign="center" color="teal.700" mb={2}>
+          Admin Dashboard
         </Heading>
-
-        {/* Welcome Message */}
-        <Text textAlign="center" mb={6} color="gray.600" fontSize="lg">
-          Welcome, Administrator! Here's an overview of your tasks.
+        <Text textAlign="center" fontSize="md" color="gray.600" mb={8}>
+          Manage users and system tasks below.
         </Text>
 
-        <Stack spacing={6}>
+        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
           {/* Add Users */}
           <Box
-            bg="gray.100"
+            bg={cardBg}
             p={6}
-            borderRadius="md"
-            shadow="sm"
+            borderRadius="lg"
             textAlign="center"
+            shadow="md"
           >
-            <Heading as="h3" size="md" mb={2} color="gray.700">
+            <Icon as={AddIcon} w={6} h={6} color="teal.500" mb={2} />
+            <Heading as="h3" size="md" mb={2}>
               Add Users
             </Heading>
-            <Text color="gray.600">Go to add user form.</Text>
+            <Text fontSize="sm" color="gray.600" mb={4}>
+              Create new user accounts with roles and permissions.
+            </Text>
             <Button
-              mt={4}
               colorScheme="teal"
               size="sm"
               onClick={() => navigate("/add-user")}
@@ -74,20 +78,22 @@ const AdminPage = () => {
             </Button>
           </Box>
 
-          {/* Remove user */}
+          {/* Remove Users */}
           <Box
-            bg="gray.100"
+            bg={cardBg}
             p={6}
-            borderRadius="md"
-            shadow="sm"
+            borderRadius="lg"
             textAlign="center"
+            shadow="md"
           >
-            <Heading as="h3" size="md" mb={2} color="gray.700">
+            <Icon as={DeleteIcon} w={6} h={6} color="teal.500" mb={2} />
+            <Heading as="h3" size="md" mb={2}>
               Remove Users
             </Heading>
-            <Text color="gray.600">See list of Users.</Text>
+            <Text fontSize="sm" color="gray.600" mb={4}>
+              View and delete existing users from the system.
+            </Text>
             <Button
-              mt={4}
               colorScheme="teal"
               size="sm"
               onClick={() => navigate("/remove-user")}
@@ -96,20 +102,22 @@ const AdminPage = () => {
             </Button>
           </Box>
 
-          {/* Update User */}
+          {/* Edit Users */}
           <Box
-            bg="gray.100"
+            bg={cardBg}
             p={6}
-            borderRadius="md"
-            shadow="sm"
+            borderRadius="lg"
             textAlign="center"
+            shadow="md"
           >
-            <Heading as="h3" size="md" mb={2} color="gray.700">
-              Edit User Account Details
+            <Icon as={EditIcon} w={6} h={6} color="teal.500" mb={2} />
+            <Heading as="h3" size="md" mb={2}>
+              Edit Users
             </Heading>
-            <Text color="gray.600">Make changes to User account.</Text>
+            <Text fontSize="sm" color="gray.600" mb={4}>
+              Update user details such as email, role, or phone.
+            </Text>
             <Button
-              mt={4}
               colorScheme="teal"
               size="sm"
               onClick={() => navigate("/edit-user-list")}
@@ -117,7 +125,7 @@ const AdminPage = () => {
               Edit
             </Button>
           </Box>
-        </Stack>
+        </SimpleGrid>
       </Box>
     </Flex>
   );
