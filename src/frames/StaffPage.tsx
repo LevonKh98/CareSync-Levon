@@ -21,21 +21,6 @@ import axios from "axios";
 //import PatientLookup from "../components/PatientLookup.jsx";
 import { format } from "date-fns";
 
-// Define interfaces for better TypeScript support
-interface Appointment {
-  appointment_id: number;
-}
-
-interface AppointmentDetails {
-  appointment_id: number;
-  time: string;
-  doctor_id: number;
-  patient_name: string;
-  patient_phone: string;
-}
-
-// Import Patient Lookup Component
-
 const StaffPage = () => {
   const navigate = useNavigate();
   const [todaysAppointments, setTodaysAppointments] = useState<Appointment[]>(
@@ -57,11 +42,7 @@ const StaffPage = () => {
     {}
   );
 
-  const {
-    isOpen: isLookupOpen,
-    onOpen: openLookup,
-    onClose: closeLookup,
-  } = useDisclosure();
+  const { onOpen: openLookup } = useDisclosure();
 
   const handleShowPatientInfo = async (patientId: number) => {
     const result = await getPatient(patientId);
