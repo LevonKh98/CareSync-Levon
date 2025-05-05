@@ -140,10 +140,13 @@ const ManageAppointments = () => {
       }
     } catch (err) {
       console.error("Error updating appointment:", err);
-      alert("Failed to update appointment.");
+      if (err.response && err.response.data && err.response.data.message) {
+        alert(err.response.data.message);
+      } else {
+        alert("Failed to update appointment.");
+      }
     }
   };
-
   const handleDelete = async (appointmentId) => {
     if (!window.confirm("Are you sure you want to delete this appointment?"))
       return;
@@ -188,7 +191,11 @@ const ManageAppointments = () => {
       }
     } catch (err) {
       console.error("Error adding appointment:", err);
-      alert("Failed to add appointment.");
+      if (err.response && err.response.data && err.response.data.message) {
+        alert(err.response.data.message);
+      } else {
+        alert("Failed to add appointment.");
+      }
     }
   };
 
