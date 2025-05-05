@@ -33,9 +33,14 @@ const EditUser: React.FC = () => {
     role: "",
   });
 
+  const [validationErrors, setValidationErrors] = useState({
+    email: "",
+    phone: "",
+    role: "",
+  });
+
   const [loading, setLoading] = useState(true);
 
-  // Fetch user details
   useEffect(() => {
     axios
       .get(`http://localhost:5000/api/getUser/${id}`)
@@ -57,11 +62,66 @@ const EditUser: React.FC = () => {
   }, [id, toast]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserData({ ...userData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setUserData({ ...userData, [name]: value });
+
+    // Real-time validation
+    if (name === "role") {
+      const validRoles = ["admin", "doctor", "nurse"];
+      setValidationErrors(prev => ({
+        ...prev,
+        role: validRoles.includes(value.toLowerCase())
+          ? ""
+          : "Role must be Admin, Doctor, or Nurse",
+      }));
+    }
+
+    if (name === "phone") {
+      const phoneRegex = /^\d{10}$/;
+      setValidationErrors(prev => ({
+        ...prev,
+        phone: phoneRegex.test(value)
+          ? ""
+          : "Phone must be exactly 10 digits (e.g., 1234567890)",
+      }));
+    }
+
+    if (name === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      setValidationErrors(prev => ({
+        ...prev,
+        email: emailRegex.test(value)
+          ? ""
+          : "Invalid email format",
+      }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Submitting updated user:", userData);
+
+    if (Object.values(userData).some(v => String(v).trim() === "")) {
+      toast({
+        title: "Validation Error",
+        description: "All fields must be filled.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (Object.values(validationErrors).some(msg => msg !== "")) {
+      toast({
+        title: "Validation Error",
+        description: "Please fix the errors before submitting.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+      return;
+    }
 
     axios
       .put(`http://localhost:5000/api/update-user/${id}`, userData)
@@ -73,7 +133,7 @@ const EditUser: React.FC = () => {
           duration: 4000,
           isClosable: true,
         });
-        navigate(-1); // Go back to previous page
+        navigate(-1);
       })
       .catch((err) => {
         console.error("Update error:", err);
@@ -89,7 +149,6 @@ const EditUser: React.FC = () => {
 
   return (
     <Flex height="100vh" width="100vw" bg="teal.600" align="center" justify="center">
-      {/* Back Button */}
       <Button position="absolute" top="20px" left="20px" onClick={() => navigate(-1)}>
         <ArrowBackIcon boxSize={7} />
       </Button>
@@ -115,7 +174,7 @@ const EditUser: React.FC = () => {
               />
             </FormControl>
 
-            <FormControl isRequired>
+            <FormControl isRequired mt={4}>
               <FormLabel color="gray.700">Email</FormLabel>
               <Input
                 name="email"
@@ -123,30 +182,53 @@ const EditUser: React.FC = () => {
                 onChange={handleChange}
                 color="black"
               />
+              {validationErrors.email && (
+                <Text fontSize="sm" color="red.500" mt={1}>
+                  {validationErrors.email}
+                </Text>
+              )}
             </FormControl>
 
-            <FormControl isRequired>
+            <FormControl isRequired mt={4}>
               <FormLabel color="gray.700">Phone</FormLabel>
               <Input
                 name="phone"
                 value={userData.phone}
                 onChange={handleChange}
+                placeholder="1234567890"
+                maxLength={10}
                 color="black"
               />
+              {validationErrors.phone && (
+                <Text fontSize="sm" color="red.500" mt={1}>
+                  {validationErrors.phone}
+                </Text>
+              )}
             </FormControl>
 
-            <FormControl isRequired>
+            <FormControl isRequired mt={4}>
               <FormLabel color="gray.700">Role</FormLabel>
               <Input
                 name="role"
                 value={userData.role}
                 onChange={handleChange}
-                placeholder="admin/staff/doctor"
+                placeholder="admin, doctor, or nurse"
                 color="black"
               />
+              {validationErrors.role && (
+                <Text fontSize="sm" color="red.500" mt={1}>
+                  {validationErrors.role}
+                </Text>
+              )}
             </FormControl>
 
-            <Button type="submit" colorScheme="teal" mt={4} width="full">
+            <Button
+              type="submit"
+              colorScheme="teal"
+              mt={6}
+              width="full"
+              isDisabled={Object.values(validationErrors).some(msg => msg !== "")}
+            >
               Save Changes
             </Button>
           </form>
