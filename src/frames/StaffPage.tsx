@@ -7,24 +7,143 @@ import {
   Flex,
   Stack,
   Spinner,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // Import Axios for API calls
+import axios from "axios";
+//import PatientLookup from "../components/PatientLookup.jsx";
+import { format } from "date-fns";
+
+// Define interfaces for better TypeScript support
+interface Appointment {
+  appointment_id: number;
+}
+
+interface AppointmentDetails {
+  appointment_id: number;
+  time: string;
+  doctor_id: number;
+  patient_name: string;
+  patient_phone: string;
+}
+
+// Import Patient Lookup Component
 
 const StaffPage = () => {
   const navigate = useNavigate();
-  const [todaysAppointments, setTodaysAppointments] = useState([]); // Store fetched appointments
-  const [loading, setLoading] = useState(true); // State for loading status
-  const [error, setError] = useState(""); // Store errors if any
+  const [todaysAppointments, setTodaysAppointments] = useState<Appointment[]>(
+    []
+  );
 
-  // Fetch today's appointments from the backend API
+  const [selectedPatient, setSelectedPatient] = useState<{
+    id: number;
+    name: string;
+    dob: string;
+    address: string;
+    phone_number: string;
+    email: string;
+  } | null>(null);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [patientNames, setPatientNames] = useState<{ [key: number]: string }>(
+    {}
+  );
+
+  const {
+    isOpen: isLookupOpen,
+    onOpen: openLookup,
+    onClose: closeLookup,
+  } = useDisclosure();
+
+  const handleShowPatientInfo = async (patientId: number) => {
+    const result = await getPatient(patientId);
+    if (result && result.success) {
+      setSelectedPatient({
+        id: result.data.patient_id,
+        name: result.data.name,
+        dob: result.data.dob,
+        address: result.data.address,
+        phone_number: result.data.phone_number,
+        email: result.data.email,
+      });
+    }
+  };
+
   useEffect(() => {
+    const fetchPatients = async () => {
+      const uniquePatientIds = [
+        ...new Set(todaysAppointments.map((appt) => appt.patient_id)),
+      ];
+
+      const newPatientNames: { [key: number]: string } = { ...patientNames };
+
+      const fetchPromises = uniquePatientIds
+        .filter((id) => !patientNames[id]) // Only fetch if not already in state
+        .map(async (id) => {
+          const result = await getPatient(id);
+          if (result && result.success && result.data?.name) {
+            newPatientNames[id] = result.data.name;
+          }
+        });
+
+      await Promise.all(fetchPromises);
+
+      setPatientNames((prev) => ({ ...prev, ...newPatientNames }));
+    };
+
+    if (todaysAppointments.length > 0) {
+      fetchPatients();
+    }
+  }, [todaysAppointments]);
+
+  interface Appointment {
+    appointment_id: number;
+    patient_id: number;
+    doctor_id: number;
+    date: string;
+    time: string;
+    status: string;
+  }
+
+  const {
+    isOpen: isAppsOpen,
+    onOpen: openApps,
+    onClose: closeApps,
+  } = useDisclosure();
+
+  const getPatient = async (patientId: number) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/getPatient/${patientId}`
+      );
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error("Error fetching patient");
+      }
+
+      return result; // Returns { success: true, data: { patient_id, name, ... } }
+    } catch (error) {
+      console.error("Error fetching patient:", error);
+      return null;
+    }
+  };
+
+  React.useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const response = await axios.get(
+        const response = await axios.get<{ data: Appointment[] }>(
           "http://localhost:5000/api/todays-appointments"
         );
-        setTodaysAppointments(response.data.data); // Store appointments in state
+        setTodaysAppointments(response.data.data); // ✅ No more TypeScript error
         setLoading(false);
       } catch (err) {
         console.error("Error fetching appointments:", err);
@@ -34,18 +153,23 @@ const StaffPage = () => {
     };
 
     fetchAppointments();
-  }, []); // Runs only once when the component mounts
+  }, []);
 
   // Handle logout
   const handleLogout = () => {
+    localStorage.removeItem("token");
     navigate("/");
+  };
+
+  const handleManageAppointments = () => {
+    navigate("/manage-appointments");
   };
 
   return (
     <Flex
       align="center"
       justify="center"
-      bg="gray.50"
+      bg="blue.50"
       minHeight="100vh"
       width="100vw"
       overflow="hidden"
@@ -71,8 +195,6 @@ const StaffPage = () => {
         <Heading as="h1" size="xl" mb={4} textAlign="center" color="gray.700">
           Staff Home
         </Heading>
-
-        {/* Welcome Message */}
         <Text textAlign="center" mb={6} color="gray.600" fontSize="lg">
           Welcome, Doctor! Here's an overview of your tasks.
         </Text>
@@ -100,14 +222,7 @@ const StaffPage = () => {
                 <Text color="gray.600">
                   {todaysAppointments.length} Appointments Scheduled
                 </Text>
-                <Button
-                  mt={4}
-                  colorScheme="teal"
-                  size="sm"
-                  onClick={() =>
-                    alert(JSON.stringify(todaysAppointments, null, 2))
-                  }
-                >
+                <Button mt={4} colorScheme="teal" size="sm" onClick={openApps}>
                   View Details
                 </Button>
               </>
@@ -126,13 +241,8 @@ const StaffPage = () => {
               Look Up Patient
             </Heading>
             <Text color="gray.600">Find patient information quickly.</Text>
-            <Button
-              mt={4}
-              colorScheme="teal"
-              size="sm"
-              onClick={() => alert("Look Up Patient")}
-            >
-              Look Up Patient
+            <Button mt={4} colorScheme="teal" size="sm" onClick={openLookup}>
+              Look Up
             </Button>
           </Box>
 
@@ -152,13 +262,123 @@ const StaffPage = () => {
               mt={4}
               colorScheme="teal"
               size="sm"
-              onClick={() => alert("Manage Appointments")}
+              onClick={handleManageAppointments}
             >
               Manage Appointments
             </Button>
+            {/* Appointments Modal */}
+            <Modal isOpen={isAppsOpen} onClose={closeApps}>
+              <ModalOverlay />
+              <ModalContent maxWidth="600px" width="90%">
+                <ModalHeader>
+                  Today's Appointments -{" "}
+                  {format(new Date(), "EEEE, MMMM d, yyyy")}
+                </ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  {todaysAppointments.length > 0 ? (
+                    <Stack spacing={3}>
+                      {todaysAppointments.map((appt) => (
+                        <Box
+                          key={appt.appointment_id}
+                          p={4}
+                          bg="gray.500"
+                          borderRadius="md"
+                        >
+                          <Flex justify="space-between" align="center">
+                            <Box>
+                              <Text fontWeight="bold">
+                                Patient ID: {appt.patient_id}
+                              </Text>
+                              <Text fontWeight="bold">
+                                Name:{" "}
+                                {patientNames[appt.patient_id] || "Loading..."}
+                              </Text>
+                              <Text>
+                                Time:{" "}
+                                {new Date(
+                                  `1970-01-01T${appt.time}`
+                                ).toLocaleTimeString("en-US", {
+                                  hour: "numeric",
+                                  minute: "2-digit",
+                                  hour12: true,
+                                })}
+                              </Text>
+                              <Text>Status: {appt.status}</Text>
+                            </Box>
+                            <Button
+                              size="sm"
+                              colorScheme="blue"
+                              onClick={() =>
+                                handleShowPatientInfo(appt.patient_id)
+                              }
+                            >
+                              Show Patient Full Info
+                            </Button>
+                          </Flex>
+                        </Box>
+                      ))}
+                    </Stack>
+                  ) : (
+                    <Text>No appointments for today.</Text>
+                  )}
+
+                  {/* Show Patient Full Info Below the List */}
+                  {selectedPatient && (
+                    <Box
+                      mt={6}
+                      p={4}
+                      bg="gray.500"
+                      borderRadius="md"
+                      position="relative"
+                    >
+                      {/* Close Button */}
+                      <Button
+                        size="xs"
+                        colorScheme="red"
+                        position="absolute"
+                        top="5px"
+                        right="5px"
+                        onClick={() => setSelectedPatient(null)}
+                      >
+                        ✕
+                      </Button>
+
+                      <Text fontWeight="bold" mb={2}>
+                        Full Patient Info
+                      </Text>
+                      <Text>
+                        <strong>ID:</strong> {selectedPatient.id}
+                      </Text>
+                      <Text>
+                        <strong>Name:</strong> {selectedPatient.name}
+                      </Text>
+                      <Text>
+                        <strong>DOB:</strong>{" "}
+                        {new Date(selectedPatient.dob).toLocaleDateString()}
+                      </Text>
+                      <Text>
+                        <strong>Address:</strong> {selectedPatient.address}
+                      </Text>
+                      <Text>
+                        <strong>Phone:</strong> {selectedPatient.phone_number}
+                      </Text>
+                      <Text>
+                        <strong>Email:</strong> {selectedPatient.email}
+                      </Text>
+                    </Box>
+                  )}
+                </ModalBody>
+
+                <ModalFooter>
+                  <Button onClick={closeApps}>Close</Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
           </Box>
         </Stack>
       </Box>
+      {/* Include the Patient Lookup Component */}
     </Flex>
   );
 };
