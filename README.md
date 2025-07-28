@@ -1,50 +1,51 @@
-# React + TypeScript + Vite
+# CareSync – Healthcare Appointment System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
+CareSync is a **full-stack healthcare appointment and records management system** designed to streamline patient scheduling, record management, and administrative workflows. The platform uses **role-based access control (RBAC)** to differentiate features for staff, doctors, and administrators, ensuring data security and proper access management.
 
-Currently, two official plugins are available:
+This project was built as part of a **team university project**. It was developed locally and later uploaded to GitHub, which is why the **contribution graph does not reflect the full development timeline**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## Key Features
+- **Role-Based Access Control (RBAC):** Different dashboards for Admins, Doctors, and Staff.
+- **User Authentication:** JWT-based authentication with secure session handling.
+- **Email Notifications:** Password reset and account-related email notifications.
+- **Appointment Scheduling:** 
+  - Conflict detection (no overlapping appointments).
+  - Validation for weekdays, working hours, and minimum time gaps.
+- **Patient Record Management:** Secure patient lookup, record creation, and updates.
+- **Real-Time Updates:** Data refresh without page reloads using efficient API calls.
+- **User-Friendly Interface:** Built with **Chakra UI** for a clean and responsive UI.
+- **Cloud Database Integration:** Uses **AWS RDS (MySQL)** for scalable data storage.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+---
 
-- Configure the top-level `parserOptions` property like this:
+## Tech Stack
+- **Frontend:** React, TypeScript, Chakra UI.
+- **Backend:** Node.js, Express.js.
+- **Database:** MySQL (hosted on AWS RDS).
+- **Authentication & Security:** JWT (JSON Web Tokens), bcrypt for password hashing.
+- **Tools & Practices:** Git, GitHub, REST APIs, Agile (Scrum).
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+---
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## My Contributions
+As part of the development team, I worked on:
+- Designing and implementing **backend REST APIs** for appointments and patient data.
+- **Database design and integration** with AWS RDS (MySQL).
+- Developing **appointment scheduling logic**, including validations for time conflicts and business rules.
+- Building **frontend components** for appointment forms and patient lookup.
+- Collaborating on **UI improvements** and implementing form validation for better user experience.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+---
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## Future Improvements
+- Implement **analytics dashboard** for administrators (e.g., appointment trends).
+- Expand the system to include **billing and insurance modules**.
+- Add **real-time chat** between patients and doctors.
+
+---
+
+
+
